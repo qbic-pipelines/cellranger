@@ -211,7 +211,7 @@ process get_software_versions {
     file "refdata*" into ch_reference_sources
 
     script:
-    if params.genome == 'GRCh38' {
+    if (params.genome == 'GRCh38') {
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
         tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
