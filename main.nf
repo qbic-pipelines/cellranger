@@ -249,7 +249,7 @@ process fastqc {
 }
 
 process count {
-    tag "$name"
+    tag 'count'
     label 'process_medium'
     publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
 
