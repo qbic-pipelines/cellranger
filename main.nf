@@ -199,6 +199,23 @@ process get_software_versions {
     """
 }
 
+/* 
+ * STEP 0 - BuildReferences
+ */
+ process references {
+    tag "references"
+    label 'process_low'
+    publishDir "${params.outdir}/references", mode: params.publish_dir_mode
+
+    output:
+    file "reference_sources/*" into ch_reference_sources
+
+    script:
+    """
+    build_separate_references.sh
+    """ 
+ }
+
 /*
  * STEP 1 - FastQC
  */
