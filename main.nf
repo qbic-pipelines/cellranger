@@ -106,19 +106,19 @@ if (params.input_paths) {
             .from(params.input_paths)
             .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true) ] ] }
             .ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
-            .into { ch_read_files_fastqc; ch_read_files_trimming }
+            .into { ch_read_files_fastqc; ch_read_files_count }
     } else {
         Channel
             .from(params.input_paths)
             .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] ] }
             .ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
-            .into { ch_read_files_fastqc; ch_read_files_trimming }
+            .into { ch_read_files_fastqc; ch_read_files_count }
     }
 } else {
     Channel
         .fromFilePairs(params.input, size: params.single_end ? 1 : 2)
         .ifEmpty { exit 1, "Cannot find any reads matching: ${params.input}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --single_end on the command line." }
-        .into { ch_read_files_fastqc; ch_read_files_trimming }
+        .into { ch_read_files_fastqc; ch_read_files_count }
 }
 
 // Header log info
@@ -245,6 +245,23 @@ process fastqc {
     script:
     """
     fastqc --quiet --threads $task.cpus $reads
+    """
+}
+
+process count {
+    tag "$name"
+    label 'process_medium'
+    publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
+
+    input:
+    set vale(name), file('fastqs/*') from ch_read_files_count.collect()
+    set file(references) from ch_reference_sources
+
+    script:
+    """
+    cellranger count \
+      --fastqs=./fastqs \
+      --transcriptome=${references}
     """
 }
 
