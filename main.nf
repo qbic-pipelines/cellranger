@@ -250,7 +250,7 @@ process fastqc {
 
 process count {
     tag 'count'
-    label 'process_medium'
+    label 'cellranger'
     publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
 
     input:
