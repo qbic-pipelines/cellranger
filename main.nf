@@ -208,11 +208,12 @@ process get_software_versions {
     publishDir "${params.outdir}/references", mode: params.publish_dir_mode
 
     output:
-    file "reference_sources/*" into ch_reference_sources
+    file "refdata-cellranger-GRCh38-3.0.0/*" into ch_reference_sources
 
     script:
     """
-    build_separate_references.sh
+    wget https://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
+    tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
     """ 
  }
 
