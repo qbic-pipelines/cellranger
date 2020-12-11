@@ -1,8 +1,4 @@
-# nf-core/cellranger: Output
-
-## :warning: Please read this documentation on the nf-core website: [https://nf-co.re/cellranger/output](https://nf-co.re/cellranger/output)
-
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
+# qbic-pipelines/cellranger: Output
 
 ## Introduction
 
@@ -10,7 +6,7 @@ This document describes the output produced by the pipeline. Most of the plots a
 
 The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
-<!-- TODO nf-core: Write this documentation describing your workflow's output -->
+<!-- TODO qbic-pipelines: Write this documentation describing your workflow's output -->
 
 ## Pipeline overview
 

@@ -5,7 +5,7 @@ labels: bug
 ---
 
 <!--
-# nf-core/cellranger bug report
+# qbic-pipelines/cellranger bug report
 
 Hi there!
 

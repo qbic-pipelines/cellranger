@@ -1,11 +1,11 @@
 ---
 name: Feature request
-about: Suggest an idea for the nf-core website
+about: Suggest an idea for the pipeline
 labels: enhancement
 ---
 
 <!--
-# nf-core/cellranger feature request
+# qbic-pipelines/cellranger feature request
 
 Hi there!
 

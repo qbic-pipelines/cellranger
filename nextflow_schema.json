@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/cellranger/master/nextflow_schema.json",
-    "title": "nf-core/cellranger pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/qbic-pipelines/cellranger/master/nextflow_schema.json",
+    "title": "qbic-pipelines/cellranger pipeline parameters",
     "description": "Cell ranger pipeline for single cell RNAseq",
     "type": "object",
     "definitions": {
