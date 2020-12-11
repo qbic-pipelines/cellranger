@@ -70,8 +70,8 @@ if (params.genomes && params.genome && !params.genomes.containsKey(params.genome
 //   input:
 //   file fasta from ch_fasta
 //
-params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
-if (params.fasta) { ch_fasta = file(params.fasta, checkIfExists: true) }
+//params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+//if (params.fasta) { ch_fasta = file(params.fasta, checkIfExists: true) }
 
 // Has the run name been specified by the user?
 // this has the bonus effect of catching both -name and --name
@@ -208,13 +208,21 @@ process get_software_versions {
     publishDir "${params.outdir}/references", mode: params.publish_dir_mode
 
     output:
-    file "refdata-cellranger-GRCh38-3.0.0/*" into ch_reference_sources
+    file "refdata*" into ch_reference_sources
 
     script:
-    """
-    wget https://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
-    tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
-    """ 
+    if params.genome == 'GRCh38' {
+        """
+        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
+        tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
+        """ 
+    } else if ( params.genome == 'mm10' ) {
+        """
+        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
+        tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
+        """ 
+    }
+
  }
 
 /*
