@@ -259,7 +259,7 @@ process count {
 
     script:
     """
-    cellranger count \
+    cellranger count --id='run' \
       --fastqs=./fastqs \
       --transcriptome=${references}
     """
