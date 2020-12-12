@@ -254,14 +254,14 @@ process count {
     input:
     val(name) from ch_read_names_count.map{ it[0] }.collect()
     file('fastqs/*') from ch_read_files_count.map{ it[1] }.collect().flatten()
-    file(reference) from ch_reference_sources
+    file('reference.tar.gz') from ch_reference_sources
 
     script:
     """
-    tar -zxvf ${reference}
+    tar -zxvf reference.tar.gz
     cellranger count --id='run' \
       --fastqs=./fastqs \
-      --transcriptome=${reference.baseName.baseName}
+      --transcriptome=reference
     """
 }
 
