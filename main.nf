@@ -214,12 +214,10 @@ process get_software_versions {
     if (params.genome == 'GRCh38') {
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
-        tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
         """ 
     } else if ( params.genome == 'mm10' ) {
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
-        tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
         """ 
     }
 
@@ -260,9 +258,10 @@ process count {
 
     script:
     """
+    tar -zxvf refdata-cellranger-GRCh38-3.0.0.tar.gz
     cellranger count --id='run' \
       --fastqs=./fastqs \
-      --transcriptome=${references}
+      --transcriptome=${references.baseName}
     """
 }
 
