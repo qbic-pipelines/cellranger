@@ -126,13 +126,13 @@ if (params.index_file) {
             .splitCsv(header: true, sep:'\t')
             .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true), file("${col.I1}", checkifExists: true)) }
             .dump()
-            .into( ch_read_files_fastqc; ch_read_files_count) 
+            .into{ ch_read_files_fastqc; ch_read_files_count }
 } else {
     Channel.from( ch_metadata )
             .splitCsv(header: true, sep:'\t')
             .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true)) }
             .dump()
-            .into( ch_read_files_fastqc; ch_read_files_count)
+            .into{ ch_read_files_fastqc; ch_read_files_count }
 }
 
 // Header log info
