@@ -120,6 +120,20 @@ if (params.input_paths) {
         .ifEmpty { exit 1, "Cannot find any reads matching: ${params.input}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --single_end on the command line." }
         .into { ch_read_files_fastqc; ch_read_files_count; ch_read_names_count }
 }
+if (params.input)  { ch_metadata = file(params.input, checkIfExists: true) } else { exit 1, "Please provide input file with sample metadata with the '--input' option." }
+if (params.index_file) {
+    Channel.from( ch_metadata )
+            .splitCsv(header: true, sep:'\t')
+            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true), file("${col.I1}", checkifExists: true)) }
+            .dump()
+            .into( ch_read_files_fastqc; ch_read_files_count) 
+} else {
+    Channel.from( ch_metadata )
+            .splitCsv(header: true, sep:'\t')
+            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true)) }
+            .dump()
+            .into( ch_read_files_fastqc; ch_read_files_count)
+}
 
 // Header log info
 log.info nfcoreHeader()
@@ -227,7 +241,7 @@ process get_software_versions {
  * STEP 1 - FastQC
  */
 process fastqc {
-    tag "$name"
+    tag "$sample"
     label 'process_medium'
     publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode,
         saveAs: { filename ->
@@ -235,14 +249,14 @@ process fastqc {
                 }
 
     input:
-    set val(name), file(reads) from ch_read_files_fastqc
+    tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_fastqc
 
     output:
     file "*_fastqc.{zip,html}" into ch_fastqc_results
 
     script:
     """
-    fastqc --quiet --threads $task.cpus $reads
+    fastqc --quiet --threads $task.cpus ${R1} ${R2} 
     """
 }
 
@@ -252,15 +266,14 @@ process count {
     publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
 
     input:
-    val(name) from ch_read_names_count.map{ it[0] }.collect()
-    file('fastqs/*') from ch_read_files_count.map{ it[1] }.collect().flatten()
+    tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
     file('reference.tar.gz') from ch_reference_sources
 
     script:
     """
     tar -zxvf reference.tar.gz
     cellranger count --id='run' \
-      --fastqs=./fastqs \
+      --fastqs=. \
       --transcriptome=reference
     """
 }
