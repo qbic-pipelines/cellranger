@@ -254,8 +254,8 @@ process count {
     publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
 
     input:
-    val(name) from ch_read_names_count.map{it -> it[0]}.collect()
-    file('fastqs/*') from ch_read_files_count.map{n -> n[1]}.collect().flatten()
+    val(name) from ch_read_names_count.map{ it[0] }.collect()
+    file('fastqs/*') from ch_read_files_count.map{ n[1] }.collect().flatten()
     file(references) from ch_reference_sources
 
     script:
