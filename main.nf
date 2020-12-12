@@ -252,6 +252,7 @@ process count {
     script:
     """
     tar -zxvf reference.tar.gz
+    mv reference* reference
     cellranger count --id='run' \
       --fastqs=. \
       --transcriptome=reference
