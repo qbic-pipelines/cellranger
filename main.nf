@@ -70,8 +70,8 @@ if (params.genomes && params.genome && !params.genomes.containsKey(params.genome
 //   input:
 //   file fasta from ch_fasta
 //
-params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
-if (params.fasta) { ch_fasta = file(params.fasta, checkIfExists: true) }
+//params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+//if (params.fasta) { ch_fasta = file(params.fasta, checkIfExists: true) }
 
 // Has the run name been specified by the user?
 // this has the bonus effect of catching both -name and --name
@@ -106,19 +106,33 @@ if (params.input_paths) {
             .from(params.input_paths)
             .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true) ] ] }
             .ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
-            .into { ch_read_files_fastqc; ch_read_files_trimming }
+            .into { ch_read_files_fastqc; ch_read_files_count; ch_read_names_count }
     } else {
         Channel
             .from(params.input_paths)
             .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] ] }
             .ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
-            .into { ch_read_files_fastqc; ch_read_files_trimming }
+            .into { ch_read_files_fastqc; ch_read_files_count; ch_read_names_count }
     }
 } else {
     Channel
         .fromFilePairs(params.input, size: params.single_end ? 1 : 2)
         .ifEmpty { exit 1, "Cannot find any reads matching: ${params.input}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --single_end on the command line." }
-        .into { ch_read_files_fastqc; ch_read_files_trimming }
+        .into { ch_read_files_fastqc; ch_read_files_count; ch_read_names_count }
+}
+if (params.input)  { ch_metadata = file(params.input, checkIfExists: true) } else { exit 1, "Please provide input file with sample metadata with the '--input' option." }
+if (params.index_file) {
+    Channel.from( ch_metadata )
+            .splitCsv(header: true, sep:'\t')
+            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true), file("${col.I1}", checkifExists: true)) }
+            .dump()
+            .into( ch_read_files_fastqc; ch_read_files_count) 
+} else {
+    Channel.from( ch_metadata )
+            .splitCsv(header: true, sep:'\t')
+            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true)) }
+            .dump()
+            .into( ch_read_files_fastqc; ch_read_files_count)
 }
 
 // Header log info
@@ -208,19 +222,26 @@ process get_software_versions {
     publishDir "${params.outdir}/references", mode: params.publish_dir_mode
 
     output:
-    file "reference_sources/*" into ch_reference_sources
+    file "refdata*" into ch_reference_sources
 
     script:
-    """
-    build_separate_references.sh
-    """ 
+    if (params.genome == 'GRCh38') {
+        """
+        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
+        """ 
+    } else if ( params.genome == 'mm10' ) {
+        """
+        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
+        """ 
+    }
+
  }
 
 /*
  * STEP 1 - FastQC
  */
 process fastqc {
-    tag "$name"
+    tag "$sample"
     label 'process_medium'
     publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode,
         saveAs: { filename ->
@@ -228,14 +249,32 @@ process fastqc {
                 }
 
     input:
-    set val(name), file(reads) from ch_read_files_fastqc
+    tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_fastqc
 
     output:
     file "*_fastqc.{zip,html}" into ch_fastqc_results
 
     script:
     """
-    fastqc --quiet --threads $task.cpus $reads
+    fastqc --quiet --threads $task.cpus ${R1} ${R2} 
+    """
+}
+
+process count {
+    tag 'count'
+    label 'cellranger'
+    publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
+
+    input:
+    tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
+    file('reference.tar.gz') from ch_reference_sources
+
+    script:
+    """
+    tar -zxvf reference.tar.gz
+    cellranger count --id='run' \
+      --fastqs=. \
+      --transcriptome=reference
     """
 }
 
@@ -353,7 +392,7 @@ workflow.onComplete {
     def email_html = html_template.toString()
 
     // Render the sendmail template
-    def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, baseDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
+    def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, projectDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
     def sf = new File("$projectDir/assets/sendmail_template.txt")
     def sendmail_template = engine.createTemplate(sf).make(smail_fields)
     def sendmail_html = sendmail_template.toString()

@@ -30,16 +30,16 @@ mouse_gtf_in="${source}/gencode.vM23.primary_assembly.annotation.gtf"
 
 
 if [ ! -f "$human_fasta_in" ]; then
-    curl -sS "$human_fasta_url" | zcat > "$human_fasta_in"
+    wget -c "$human_fasta_url" | zcat > "$human_fasta_in"
 fi
 if [ ! -f "$human_gtf_in" ]; then
-    curl -sS "$human_gtf_url" | zcat > "$human_gtf_in"
+    wget -c "$human_gtf_url" | zcat > "$human_gtf_in"
 fi
 if [ ! -f "$mouse_fasta_in" ]; then
-    curl -sS "$mouse_fasta_url" | zcat > "$mouse_fasta_in"
+    wget -c "$mouse_fasta_url" | zcat > "$mouse_fasta_in"
 fi
 if [ ! -f "$mouse_gtf_in" ]; then
-    curl -sS "$mouse_gtf_url" | zcat > "$mouse_gtf_in"
+    wget -c "$mouse_gtf_url" | zcat > "$mouse_gtf_in"
 fi
 
 
