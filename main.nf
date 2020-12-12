@@ -247,12 +247,12 @@ process count {
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
-    file('reference.tar.gz') from ch_reference_sources
+    file(reference) from ch_reference_sources
 
     script:
     """
-    tar -zxvf reference.tar.gz
-    mv reference* reference
+    tar -zxvf ${reference}
+    mv refdata* reference
     cellranger count --id='run' \
       --fastqs=. \
       --transcriptome=reference
