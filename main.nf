@@ -254,6 +254,9 @@ process count {
     file(reference) from ch_reference_sources
     def reference_folder = ( params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
 
+    output:
+    file 'run'
+
     script:
     """
     tar -zxvf ${reference}
