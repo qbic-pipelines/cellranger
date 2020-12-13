@@ -240,6 +240,9 @@ process fastqc {
     """
 }
 
+/*
+ * STEP 2 - CELLRANGER COUNT
+ */
 process count {
     tag "$GEM"
     label 'cellranger'
@@ -261,7 +264,7 @@ process count {
 }
 
 /*
- * STEP 2 - MultiQC
+ * STEP 3 - MultiQC
  */
 process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: params.publish_dir_mode
