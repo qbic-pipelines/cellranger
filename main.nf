@@ -115,6 +115,11 @@ if (params.index_file) {
             .into{ ch_read_files_fastqc; ch_read_files_count }
 }
 
+// Handle reference channels
+if (!params.reference){
+    ch_reference_sources = Channel.empty()
+}
+
 // Header log info
 log.info nfcoreHeader()
 def summary = [:]
@@ -203,6 +208,9 @@ process get_software_versions {
 
     output:
     file "refdata*" into ch_reference_sources
+
+    when:
+    !params.reference
 
     script:
     if (params.genome == 'GRCh38') {
