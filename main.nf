@@ -117,6 +117,8 @@ if (params.index_file) {
 
 // Handle reference channels
 if (params.reference){
+    ch_reference_path = Channel.empty()
+} else {
     ch_reference_sources = Channel.empty()
 }
 
@@ -259,7 +261,7 @@ process count {
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
-    file(reference) from ch_reference_sources
+    file(reference) from ch_reference_sources.mix( ch_reference_path )
     def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
 
     output:
