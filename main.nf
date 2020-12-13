@@ -270,13 +270,13 @@ process count {
     def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     if ( params.reference ) {
         """
-        tar -zxvf ${reference}
         cellranger count --id='run' \
         --fastqs=. \
         --transcriptome=${reference_folder}
         """
     } else {
         """
+        tar -zxvf ${reference}
         cellranger count --id='run' \
         --fastqs=. \
         --transcriptome=${reference_folder}
