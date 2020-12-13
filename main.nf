@@ -248,14 +248,14 @@ process count {
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
     file(reference) from ch_reference_sources
+    def reference_folder = ( params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
 
     script:
     """
     tar -zxvf ${reference}
-    mv refdata* reference
     cellranger count --id='run' \
       --fastqs=. \
-      --transcriptome=reference
+      --transcriptome=${reference_folder}
     """
 }
 
