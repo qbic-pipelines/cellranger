@@ -116,7 +116,7 @@ if (params.index_file) {
 }
 
 // Handle reference channels
-if (!params.reference){
+if (params.reference){
     ch_reference_sources = Channel.empty()
 }
 
