@@ -241,9 +241,10 @@ process fastqc {
 }
 
 process count {
-    tag 'count'
+    tag "$GEM"
     label 'cellranger'
-    publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
+    label 'process_medium'
+    publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
