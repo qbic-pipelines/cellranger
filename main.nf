@@ -268,12 +268,20 @@ process count {
     file 'run'
 
     script:
-    """
-    tar -zxvf ${reference}
-    cellranger count --id='run' \
-      --fastqs=. \
-      --transcriptome=${reference_folder}
-    """
+    if ( params.reference ) {
+        """
+        tar -zxvf ${reference}
+        cellranger count --id='run' \
+        --fastqs=. \
+        --transcriptome=${reference_folder}
+        """
+    } else {
+        """
+        cellranger count --id='run' \
+        --fastqs=. \
+        --transcriptome=${reference_folder}
+        """
+    }
 }
 
 /*
