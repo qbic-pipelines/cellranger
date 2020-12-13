@@ -117,7 +117,7 @@ if (params.index_file) {
 
 // Handle reference channels
 if (params.reference){
-    ch_reference_path = Channel.empty()
+    ch_reference_path = Channel.fromPath("${params.reference}")
 } else {
     ch_reference_sources = Channel.empty()
 }
