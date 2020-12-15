@@ -270,7 +270,7 @@ process count {
     def sample_arg = sample.unique().join(",")
     if ( params.reference ) {
         """
-        cellranger count --id='run' \
+        cellranger count --id='sample-${sample_arg}' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
@@ -278,7 +278,7 @@ process count {
     } else {
         """
         tar -zxvf ${reference}
-        cellranger count --id='run' \
+        cellranger count --id='sample-${sample_arg}' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
