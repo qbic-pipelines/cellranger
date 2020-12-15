@@ -272,14 +272,17 @@ process count {
         """
         cellranger count --id='run' \
         --fastqs=. \
-        --transcriptome=${reference_folder}
+        --transcriptome=${reference_folder} \
+        --sample=${sample}
         """
     } else {
         """
         tar -zxvf ${reference}
         cellranger count --id='run' \
         --fastqs=. \
-        --transcriptome=${reference_folder}
+        --transcriptome=${reference_folder} \
+        --sample=${sample}
+
         """
     }
 }
