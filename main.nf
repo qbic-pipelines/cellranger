@@ -256,7 +256,6 @@ process fastqc {
 process count {
     tag "$GEM"
     label 'cellranger'
-    label 'process_medium'
     publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode
 
     input:
