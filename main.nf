@@ -263,7 +263,7 @@ process count {
     file(reference) from ch_reference_sources.mix( ch_reference_path ).collect()
 
     output:
-    file "sample-${sample[0]}"
+    file "sample-${sample[0]}-outs.zip"
 
     script:
     def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
@@ -274,6 +274,7 @@ process count {
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
+        zip -r "sample-${sample[0]}-outs.zip" "sample-${sample_arg}/outs/*"
         """
     } else {
         """
@@ -282,7 +283,7 @@ process count {
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
-
+        zip -r "sample-${sample[0]}-outs.zip" "sample-${sample_arg}/outs/*"
         """
     }
 }
