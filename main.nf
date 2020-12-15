@@ -268,7 +268,7 @@ process count {
 
     script:
     def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
-    def sample_arg = sample.code.join(",")
+    def sample_arg = sample.join(",")
     if ( params.reference ) {
         """
         cellranger count --id='run' \
