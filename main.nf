@@ -274,7 +274,7 @@ process count {
         cellranger count --id='run' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
-        --sample=${sample}
+        --sample=${sample_arg}
         """
     } else {
         """
@@ -282,7 +282,7 @@ process count {
         cellranger count --id='run' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
-        --sample=${sample}
+        --sample=${sample_arg}
 
         """
     }
