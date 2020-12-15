@@ -119,7 +119,7 @@ if (params.index_file) {
 if (params.reference){
     ch_reference_path = Channel.fromPath("${params.reference}")
 } else {
-    ch_reference_sources = Channel.empty()
+    ch_reference_path = Channel.empty()
 }
 
 // Header log info
