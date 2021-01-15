@@ -30,7 +30,7 @@ def helpMessage() {
       --single_end [bool]             Specifies that the input is single-end reads
 
     References                        If not specified in the configuration file or you wish to overwrite any of the references
-      --fasta [file]                  Path to fasta reference
+      --reference [file]              Path to 10x reference
 
     Other options:
       --outdir [file]                 The output directory where the results will be saved
@@ -115,6 +115,13 @@ if (params.index_file) {
             .into{ ch_read_files_fastqc; ch_read_files_count }
 }
 
+// Handle reference channels
+if (params.reference){
+    ch_reference_path = Channel.fromPath("${params.reference}")
+} else {
+    ch_reference_path = Channel.empty()
+}
+
 // Header log info
 log.info nfcoreHeader()
 def summary = [:]
@@ -122,7 +129,7 @@ if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = custom_runName ?: workflow.runName
 // TODO nf-core: Report custom parameters here
 summary['Input']            = params.input
-summary['Fasta Ref']        = params.fasta
+summary['Reference']        = params.reference
 summary['Data Type']        = params.single_end ? 'Single-End' : 'Paired-End'
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
@@ -199,10 +206,15 @@ process get_software_versions {
  process references {
     tag "references"
     label 'process_low'
-    publishDir "${params.outdir}/references", mode: params.publish_dir_mode
+    publishDir path: { params.save_reference ? "${params.outdir}/references" : params.outdir },
+               saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
+
 
     output:
     file "refdata*" into ch_reference_sources
+
+    when:
+    !params.reference
 
     script:
     if (params.genome == 'GRCh38') {
@@ -240,26 +252,48 @@ process fastqc {
     """
 }
 
+/*
+ * STEP 2 - CELLRANGER COUNT
+ */
 process count {
-    tag 'count'
+    tag "$GEM"
     label 'cellranger'
-    publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode
+    publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode,
+        saveAs: { filename ->
+            if (filename.indexOf("sample-") > 0) filename
+            else null
+        }
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
-    file('reference.tar.gz') from ch_reference_sources
+    file(reference) from ch_reference_sources.mix( ch_reference_path ).collect()
+
+    output:
+    file "sample-${sample[0]}"
 
     script:
-    """
-    tar -zxvf reference.tar.gz
-    cellranger count --id='run' \
-      --fastqs=. \
-      --transcriptome=reference
-    """
+    def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
+    def sample_arg = sample.unique().join(",")
+    if ( params.reference ) {
+        """
+        cellranger count --id='sample-${sample_arg}' \
+        --fastqs=. \
+        --transcriptome=${reference_folder} \
+        --sample=${sample_arg}
+        """
+    } else {
+        """
+        tar -zxvf ${reference}
+        cellranger count --id='sample-${sample_arg}' \
+        --fastqs=. \
+        --transcriptome=${reference_folder} \
+        --sample=${sample_arg}
+        """
+    }
 }
 
 /*
- * STEP 2 - MultiQC
+ * STEP 3 - MultiQC
  */
 process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: params.publish_dir_mode
