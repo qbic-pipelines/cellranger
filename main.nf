@@ -206,8 +206,7 @@ process get_software_versions {
  process references {
     tag "references"
     label 'process_low'
-    publishDir "${params.outdir}/references", mode: params.publish_dir_mode
-    publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
+    publishDir path: { params.save_reference ? "${params.outdir}/references" : params.outdir },
                saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
 
