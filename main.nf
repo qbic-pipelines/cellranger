@@ -30,7 +30,7 @@ def helpMessage() {
       --single_end [bool]             Specifies that the input is single-end reads
 
     References                        If not specified in the configuration file or you wish to overwrite any of the references
-      --fasta [file]                  Path to fasta reference
+      --reference [file]              Path to 10x reference
 
     Other options:
       --outdir [file]                 The output directory where the results will be saved
@@ -129,7 +129,7 @@ if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = custom_runName ?: workflow.runName
 // TODO nf-core: Report custom parameters here
 summary['Input']            = params.input
-summary['Fasta Ref']        = params.fasta
+summary['Reference']        = params.reference
 summary['Data Type']        = params.single_end ? 'Single-End' : 'Paired-End'
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
