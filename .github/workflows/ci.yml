@@ -13,7 +13,7 @@ jobs:
     name: Run workflow tests
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'qbic-pipelines/cellranger') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       NXF_VER: ${{ matrix.nxf_ver }}
       NXF_ANSI_LOG: false
