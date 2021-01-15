@@ -71,6 +71,11 @@
                     "type": "string",
                     "description": "Path to folder containing the reference files compatible with 10x cellranger.",
                     "default": "False"
+                },
+                "save_reference": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Save the reference data to the ouput directory."
                 }
             }
         },

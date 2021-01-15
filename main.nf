@@ -207,6 +207,9 @@ process get_software_versions {
     tag "references"
     label 'process_low'
     publishDir "${params.outdir}/references", mode: params.publish_dir_mode
+    publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
+               saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
+
 
     output:
     file "refdata*" into ch_reference_sources
@@ -256,7 +259,11 @@ process fastqc {
 process count {
     tag "$GEM"
     label 'cellranger'
-    publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode
+    publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode,
+        saveAs: { filename ->
+            if (filename.indexOf("sample-") > 0) filename
+            else null
+        }
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
