@@ -33,11 +33,11 @@ jobs:
             environment.yml
 
       - name: Build new docker image
-        if: env.MATCHED_FILES
+        if: env.GIT_DIFF
         run: docker build --no-cache . -t qbicpipelines/cellranger:dev
 
       - name: Pull docker image
-        if: ${{ !env.MATCHED_FILES }}
+        if: ${{ !env.GIT_DIFF }}
         run: |
           docker pull qbicpipelines/cellranger:dev
           docker tag qbicpipelines/cellranger:dev qbicpipelines/cellranger:dev
