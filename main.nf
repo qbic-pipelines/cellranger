@@ -258,9 +258,9 @@ process fastqc {
 process count {
     tag "$GEM"
     label 'cellranger'
-    publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode,
+    publishDir "${params.outdir}/cellranger_count/${GEM}", mode: params.publish_dir_mode,
         saveAs: { filename ->
-            if (filename.indexOf("sample-") > 0) filename
+            if (filename.indexOf(".zip") > 0) filename
             else null
         }
 
@@ -280,6 +280,7 @@ process count {
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
+        zip -r "sample-${GEM}-outs.zip" "sample-${GEM}/outs/*"
         """
     } else {
         """
@@ -288,6 +289,7 @@ process count {
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
+        zip -r "sample-${GEM}-outs.zip" "sample-${GEM}/outs/*"
         """
     }
 }
