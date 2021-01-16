@@ -269,14 +269,14 @@ process count {
     file(reference) from ch_reference_sources.mix( ch_reference_path ).collect()
 
     output:
-    file "sample-${GEM[0]}"
+    file "sample-${GEM}"
 
     script:
     def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     def sample_arg = sample.unique().join(",")
     if ( params.reference ) {
         """
-        cellranger count --id='sample-${GEM[0]}' \
+        cellranger count --id='sample-${GEM}' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
@@ -284,7 +284,7 @@ process count {
     } else {
         """
         tar -zxvf ${reference}
-        cellranger count --id='sample-${GEM[0]}' \
+        cellranger count --id='sample-${GEM}' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
