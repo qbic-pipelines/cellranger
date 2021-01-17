@@ -8,6 +8,7 @@ regexes = {
     "qbic-pipelines/cellranger": ["v_pipeline.txt", r"(\S+)"],
     "Nextflow": ["v_nextflow.txt", r"(\S+)"],
     "FastQC": ["v_fastqc.txt", r"FastQC v(\S+)"],
+    "cellranger": ["v_cellranger.txt", r"cellranger cellranger-(\S+)"],
     "MultiQC": ["v_multiqc.txt", r"multiqc, version (\S+)"],
 }
 results = OrderedDict()
