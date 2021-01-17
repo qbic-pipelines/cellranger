@@ -259,11 +259,7 @@ process fastqc {
 process count {
     tag "$GEM"
     label 'cellranger'
-    publishDir "${params.outdir}/cellranger_count/${GEM}", mode: params.publish_dir_mode,
-        saveAs: { filename ->
-            if (filename.indexOf(".zip") > 0) filename
-            else null
-        }
+    publishDir "${params.outdir}/cellranger_count/${GEM}", mode: params.publish_dir_mode
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
