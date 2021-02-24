@@ -196,6 +196,7 @@ process get_software_versions {
     echo $workflow.nextflow.version > v_nextflow.txt
     fastqc --version > v_fastqc.txt
     multiqc --version > v_multiqc.txt
+    cellranger --version > v_cellranger.txt
     scrape_software_versions.py &> software_versions_mqc.yaml
     """
 }
@@ -258,25 +259,21 @@ process fastqc {
 process count {
     tag "$GEM"
     label 'cellranger'
-    publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode,
-        saveAs: { filename ->
-            if (filename.indexOf("sample-") > 0) filename
-            else null
-        }
+    publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
     file(reference) from ch_reference_sources.mix( ch_reference_path ).collect()
 
     output:
-    file "sample-${sample[0]}"
+    file "sample-${GEM}/outs/*"
 
     script:
     def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     def sample_arg = sample.unique().join(",")
     if ( params.reference ) {
         """
-        cellranger count --id='sample-${sample_arg}' \
+        cellranger count --id='sample-${GEM}' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
@@ -284,7 +281,7 @@ process count {
     } else {
         """
         tar -zxvf ${reference}
-        cellranger count --id='sample-${sample_arg}' \
+        cellranger count --id='sample-${GEM}' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
         --sample=${sample_arg}
