@@ -1,0 +1,22 @@
+files_unchanged:
+  - lib/NfcoreSchema.groovy
+  - .github/CONTRIBUTING.md
+  - .github/ISSUE_TEMPLATE/bug_report.md
+  - .github/ISSUE_TEMPLATE/config.yml
+  - .github/ISSUE_TEMPLATE/feature_request.md
+  - .github/PULL_REQUEST_TEMPLATE.md
+  - .github/workflows/branch.yml
+  - assets/email_template.html
+  - assets/email_template.txt
+  - assets/sendmail_template.txt
+  - assets/multiqc_config.yaml
+files_exist:
+  - assets/nf-core-qbic-pipelines/cellranger_logo.png
+  - docs/images/nf-core-qbic-pipelines/cellranger_logo.png
+nextflow_config:
+  - manifest.name
+  - manifest.homePage
+actions_ci:
+conda_env_yaml:
+conda_dockerfile:
+  
