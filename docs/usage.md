@@ -47,8 +47,9 @@ Example sample sheet:
 
 ```
 GEM	Sample	Lane	R1	R2	I1
-Library1	pbmc_1k_v3_mini	L001	pbmc_1k_v3_mini_S1_L001_R1_001.fastq.gz	pbmc_1k_v3_mini_S1_L001_R2_001.fastq.gz	pbmc_1k_v3_mini_S1_L001_I1_001.fastq.gz
-Library1	pbmc_1k_v3_mini	L002	pbmc_1k_v3_mini_S1_L002_R1_001.fastq.gz	pbmc_1k_v3_mini_S1_L002_R2_001.fastq.gz	pbmc_1k_v3_mini_S1_L002_I1_001.fastq.gz
+GEM1	pbmc1_1k_v3_mini	L001	pbmc1_1k_v3_mini_S1_L001_R1_001.fastq.gz	pbmc1_1k_v3_mini_S1_L001_R2_001.fastq.gz	pbmc1_1k_v3_mini_S1_L001_I1_001.fastq.gz
+GEM1	pbmc1_1k_v3_mini	L002	pbmc1_1k_v3_mini_S1_L002_R1_001.fastq.gz	pbmc1_1k_v3_mini_S1_L002_R2_001.fastq.gz	pbmc1_1k_v3_mini_S1_L002_I1_001.fastq.gz
+GEM2  pbmc2_1k_v3_mini  L001  pbmc2_1k_v3_mini_S1_L002_R1_001.fastq.gz	pbmc2_1k_v3_mini_S1_L002_R2_001.fastq.gz	pbmc2_1k_v3_mini_S1_L002_I1_001.fastq.gz
 ```
 
 * GEM: GEM ID. If samples were pooled in the same GEM, but sequenced in different lanes, then they will be processed together with `cellranger count`. See this [info](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) to know more about this.
