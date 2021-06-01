@@ -269,7 +269,7 @@ process count {
             --transcriptome=${reference_folder} \
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
-            --localmem=${task.memory}
+            --localmem=${task.memory.toGiga()}
         """
     } else if ( params.genome ) {
         """
@@ -279,7 +279,7 @@ process count {
             --transcriptome=${reference_folder} \
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
-            --localmem=${task.memory}
+            --localmem=${task.memory.toGiga()}
         """
     } else {
         """
@@ -288,7 +288,7 @@ process count {
             --transcriptome=${params.reference_name} \
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
-            --localmem=${task.memory}
+            --localmem=${task.memory.toGiga()}
         """
     }
 }
