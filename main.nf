@@ -68,9 +68,9 @@ if (params.index_file) {
 }
 
 // Handle reference channels
-if (params.reference){
+if (params.prebuilt_reference){
     if (params.genome) exit 1, "Please provide either a reference folder or a genome name, not both."
-    ch_reference_path = Channel.fromPath("${params.reference}")
+    ch_reference_path = Channel.fromPath("${params.prebuilt_reference}")
 } else if (!params.genome) {
     if (!params.fasta | !params.gtf) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a reference folder, or a fasta and gtf file."
     if (params.fasta)  { ch_fasta = file(params.fasta, checkIfExists: true) } else { exit 1, "Please provide fasta file with the '--fasta' option." }
@@ -88,7 +88,11 @@ def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = workflow.runName
 summary['Input']            = params.input
-summary['Reference']        = params.reference
+summary['Prebuilt Reference']  = params.prebuilt_reference
+summary['Genome Reference']    = params.genome
+summary['Genome fasta']        = params.fasta
+summary['Genome gtf']          = params.gtf
+summary['Custom reference name'] = params.reference_name
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir']       = params.outdir
@@ -170,7 +174,7 @@ process get_references {
     file "refdata*" into ch_reference_sources
 
     when:
-    (!params.reference & !params.fasta & !params.gtf)
+    (!params.prebuilt_reference & !params.fasta & !params.gtf)
 
     script:
     if (params.genome == 'GRCh38') {
@@ -201,7 +205,7 @@ process build_references {
     file "${params.reference_name}" into ch_reference_build
 
     when:
-    (!params.reference & !params.genome)
+    (!params.prebuilt_reference & !params.genome)
 
     script:
     """
