@@ -7,18 +7,21 @@
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.04.0-brightgreen.svg)](https://www.nextflow.io/)
 
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](https://bioconda.github.io/)
-[![Docker](https://img.shields.io/docker/automated/nfcore/cellranger.svg)](https://hub.docker.com/r/nfcore/cellranger)
-[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23cellranger-4A154B?logo=slack)](https://nfcore.slack.com/channels/cellranger)
+[![Docker](https://img.shields.io/docker/automated/nfcore/qbic-pipelines-cellranger.svg)](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger)
+[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23qbic-pipelines-cellranger-4A154B?logo=slack)](https://nfcore.slack.com/channels/qbic-pipelines-cellranger)
 
 ## Introduction
+
+<!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
+**nf-core/qbic-pipelines-cellranger** is a bioinformatics best-practise analysis pipeline for
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
 
 ## Quick Start
 
-1. Install [`nextflow`](https://nf-co.re/usage/installation)
+1. Install [`nextflow`](https://nf-co.re/usage/installation) (`>=20.04.0`)
 
-2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/) or [`Podman`](https://podman.io/) for full pipeline reproducibility _(please only use [`Conda`](https://conda.io/miniconda.html) as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_
+2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/), [`Podman`](https://podman.io/), [`Shifter`](https://nersc.gitlab.io/development/shifter/how-to-use/) or [`Charliecloud`](https://hpc.github.io/charliecloud/) for full pipeline reproducibility _(please only use [`Conda`](https://conda.io/miniconda.html) as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_
 
 3. Download the pipeline and test it on a minimal dataset with a single command:
 
@@ -33,16 +36,22 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
     <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
 
     ```bash
-    nextflow run qbic-pipelines/cellranger -profile <docker/singularity/podman/conda/institute> --input '*_R{1,2}.fastq.gz' --genome GRCh37
+    nextflow run qbic-pipelines/cellranger -profile <docker/singularity/podman/conda/institute> --input 'samplesheet.tsv' --genome GRCh38
     ```
 
-See [usage docs](https://nf-co.re/cellranger/usage) for all of the available options when running the pipeline.
+See [usage docs](https://nf-co.re/qbic-pipelines-cellranger/usage) for all of the available options when running the pipeline.
+
+## Pipeline Summary
+
+By default, the pipeline currently performs the following:
+
+* Sequencing quality control (`FastQC`)
+* single-cell data analysis (`cellranger count`)
+* Overall pipeline run summaries (`MultiQC`)
 
 ## Documentation
 
 The qbic-pipelines/cellranger pipeline comes with documentation about the pipeline: [usage](./docs/usage.md) and [output](./docs/output.md).
-
-<!-- TODO nf-core: Add a brief overview of what the pipeline does and how it works -->
 
 ## Credits
 
@@ -52,18 +61,19 @@ qbic-pipelines/cellranger was originally written by Gisela Gabernet.
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
-For further information or help, don't hesitate to get in touch on the [Slack `#cellranger` channel](https://nfcore.slack.com/channels/cellranger) (you can join with [this invite](https://nf-co.re/join/slack)).
+For further information or help, don't hesitate to get in touch on the [Slack `#qbic-pipelines-cellranger` channel](https://nfcore.slack.com/channels/qbic-pipelines-cellranger) (you can join with [this invite](https://nf-co.re/join/slack)).
 
-## Citation
+## Citations
 
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi. -->
-<!-- If you use  nf-core/cellranger for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
+<!-- If you use  nf-core/qbic-pipelines-cellranger for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
 
-You can cite the `nf-core` publication as follows:
+This pipeline was created with the nf-core template. You can cite the `nf-core` publication as follows:
 
 > **The nf-core framework for community-curated bioinformatics pipelines.**
 >
 > Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
 >
 > _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).
-> ReadCube: [Full Access Link](https://rdcu.be/b1GjZ)
+
+In addition, references of tools and data used in this pipeline are as follows:

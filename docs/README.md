@@ -1,6 +1,6 @@
-# nf-core/cellranger: Documentation
+# nf-core/qbic-pipelines-cellranger: Documentation
 
-The nf-core/cellranger documentation is split into the following pages:
+The nf-core/qbic-pipelines-cellranger documentation is split into the following pages:
 
 * [Usage](usage.md)
   * An overview of how the pipeline works, how to run it and a description of all of the different command-line flags.
