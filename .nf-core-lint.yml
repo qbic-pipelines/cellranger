@@ -19,4 +19,5 @@ nextflow_config:
 actions_ci: False
 conda_env_yaml: False
 conda_dockerfile: False
+nextflow_config: False
   
