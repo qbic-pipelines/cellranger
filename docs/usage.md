@@ -9,7 +9,7 @@
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run qbic-pipelines/cellranger --input '*_R{1,2}.fastq.gz' -profile docker
+nextflow run qbic-pipelines/cellranger --input 'samplesheet.tsv' --genome 'GRCh38' -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -39,6 +39,35 @@ First, go to the [qbic-pipelines/cellranger releases page](https://github.com/qb
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
+### Input sample sheet
+
+A sample sheet containing sample metadata and paths to the input fastq files is needed to run the pipeline and should be provided with the `--input` parameter.
+
+Example sample sheet:
+
+```tsv
+GEM Sample  Lane  R1  R2  I1
+GEM1  pbmc1_1k_v3_mini  L001  pbmc1_1k_v3_mini_S1_L001_R1_001.fastq.gz  pbmc1_1k_v3_mini_S1_L001_R2_001.fastq.gz  pbmc1_1k_v3_mini_S1_L001_I1_001.fastq.gz
+GEM1  pbmc1_1k_v3_mini  L002  pbmc1_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc1_1k_v3_mini_S1_L002_R2_001.fastq.gz  pbmc1_1k_v3_mini_S1_L002_I1_001.fastq.gz
+GEM2  pbmc2_1k_v3_mini  L001  pbmc2_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc2_1k_v3_mini_S1_L002_R2_001.fastq.gz  pbmc2_1k_v3_mini_S1_L002_I1_001.fastq.gz
+```
+
+* GEM: GEM ID. If samples were pooled in the same GEM, but sequenced in different lanes, then they will be processed together with `cellranger count`. See this [info](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) to know more about this.
+* Sample: Sample ID.
+* Lane: Lane ID. If Fastq files have the same sample ID and different lane IDs, they will be merged automatically by `cellranger count`.
+* R1: First mate (R1) of fastq files.
+* R2: Second mate (R2) of fastq files.
+* I1: Index file (optional). If index file is provided, please set the flag `--index_file true`.
+
+### Reference data
+
+The reference data provided by 10x genomics is automatically downloaded in this pipeline. Only human (`GRCh38`) and mouse references (`mm10`) are supported. Please set the following:
+
+* Human data: `--genome GRCh38`
+* Mouse data: `--genome mm10`
+
+If you want to save these references for use in other analysis, you can provide the parameter `--save_references`. Then in your next run, the path to the saved references can be provided with the `--reference` parameter.
+
 ## Core Nextflow arguments
 
 > **NB:** These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
@@ -47,7 +76,7 @@ This version number will be logged in reports when you run the pipeline, so that
 
 Use this parameter to choose a configuration profile. Profiles can give configuration presets for different compute environments.
 
-Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Conda) - see below.
+Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Conda) - see below.
 
 > We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
 
@@ -60,15 +89,21 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 
 * `docker`
   * A generic configuration profile to be used with [Docker](https://docker.com/)
-  * Pulls software from Docker Hub: [`nfcore/cellranger`](https://hub.docker.com/r/nfcore/cellranger/)
+  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
 * `singularity`
   * A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
-  * Pulls software from Docker Hub: [`nfcore/cellranger`](https://hub.docker.com/r/nfcore/cellranger/)
+  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
 * `podman`
   * A generic configuration profile to be used with [Podman](https://podman.io/)
-  * Pulls software from Docker Hub: [`nfcore/cellranger`](https://hub.docker.com/r/nfcore/cellranger/)
+  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
+* `shifter`
+  * A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
+  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
+* `charliecloud`
+  * A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
+  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
 * `conda`
-  * Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity or Podman.
+  * Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter or Charliecloud.
   * A generic configuration profile to be used with [Conda](https://conda.io/docs/)
   * Pulls most software from [Bioconda](https://bioconda.github.io/)
 * `test`
@@ -98,6 +133,8 @@ process {
   }
 }
 ```
+
+To find the exact name of a process you wish to modify the compute resources, check the live-status of a nextflow run displayed on your terminal or check the nextflow error for a line like so: `Error executing process > 'bwa'`. In this case the name to specify in the custom config file is `bwa`.
 
 See the main [Nextflow documentation](https://www.nextflow.io/docs/latest/config.html) for more information.
 
