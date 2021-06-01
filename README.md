@@ -37,24 +37,51 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 See [usage docs](https://nf-co.re/qbic-pipelines-cellranger/usage) for all of the available options when running the pipeline.
 
-## Updating the pipeline container
+## Updating the pipeline container and making a new release
 
 Cell Ranger is a commercial tool and cannot be distributed. Updating the Cell Ranger version in the container and pushing the update to Dockerhub needs
 needs to be done manually.
 
-1. Clone this pipeline repository.
+1. Clone this pipeline repository. E.g. with the `gh` GitHub cli:
+
+```bash
+gh repo clone qbic-pipelines/cellranger
+cd cellranger
 ```
 
+2. Navigate to the [Cell Ranger download page](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest) and download the tar ball of the desired Cell Ranger version with `curl` or `wget`. Place this file inside the recently cloned pipeline directory.
+
+3. Edit the Dockerfile: update the Cell Ranger version in this line.
+
+```bash
+ENV CELLRANGER_VER <VERSION>
 ```
-2. Navigate to the [Cell Ranger download page](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest) and download the tar ball of the desired Cell Ranger version.
-3. Move the tar file to the pipeline repository 
+
+4. Create the container:
+
+```bash
+docker build . -t qbicpipelines/cellranger:dev
+docker push qbicpipelines/cellranger:dev
+```
+
+4. If preparing for new release: bump to the desired pipeline version (`<version>`) and container tag (same as pipeline version)
+in the `main.nf` manifest, `nextflow.config` container definition, and `ci.yml` GitHub actions workflow.
+Then push the latest and release container tags.
+
+```bash
+docker pull qbicpipelines/cellranger:dev
+docker tag qbicpipelines/cellranger:dev qbicpipelines/cellranger:latest
+docker push qbicpipelines/cellranger:latest
+docker tag qbicpipelines/cellranger:latest qbicpipelines/cellranger:<version>
+docker push qbicpipelines/cellranger:<version>
+```
 
 ## Pipeline Summary
 
 By default, the pipeline currently performs the following:
 
 * Sequencing quality control (`FastQC`)
-* single-cell data analysis (`cellranger count`)
+* single-cell data analysis with Cell Ranger (`cellranger count`)
 * Overall pipeline run summaries (`MultiQC`)
 
 ## Documentation
