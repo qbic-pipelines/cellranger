@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v1.0 - [date]
 
 Initial release of qbic-pipelines/cellranger, created with the [nf-core](https://nf-co.re/) template.
+
 ### `Added`
+
 Updated to nf-core template v1.14.
+
 ### `Fixed`
 
 ### `Dependencies`
