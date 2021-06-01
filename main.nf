@@ -265,24 +265,30 @@ process count {
     if ( params.prebuilt_reference ) {
         """
         cellranger count --id='sample-${GEM}' \
-        --fastqs=. \
-        --transcriptome=${reference_folder} \
-        --sample=${sample_arg}
+            --fastqs=. \
+            --transcriptome=${reference_folder} \
+            --sample=${sample_arg} \
+            --localcores=${task.cpus} \
+            --localmem=${task.memory}
         """
     } else if ( params.genome ) {
         """
         tar -zxvf ${reference}
         cellranger count --id='sample-${GEM}' \
-        --fastqs=. \
-        --transcriptome=${reference_folder} \
-        --sample=${sample_arg}
+            --fastqs=. \
+            --transcriptome=${reference_folder} \
+            --sample=${sample_arg} \
+            --localcores=${task.cpus} \
+            --localmem=${task.memory}
         """
     } else {
         """
         cellranger count --id='sample-${GEM}' \
-        --fastqs=. \
-        --transcriptome=${params.reference_name} \
-        --sample=${sample_arg}
+            --fastqs=. \
+            --transcriptome=${params.reference_name} \
+            --sample=${sample_arg} \
+            --localcores=${task.cpus} \
+            --localmem=${task.memory}
         """
     }
 }
