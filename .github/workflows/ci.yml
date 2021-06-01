@@ -28,7 +28,7 @@ jobs:
       - name: Pull docker image
         run: |
           docker pull qbicpipelines/cellranger:dev
-          docker tag qbicpipelines/cellranger:dev qbicpipelines/cellranger:dev
+          docker tag qbicpipelines/cellranger:dev qbicpipelines/cellranger:1.0
 
       - name: Install Nextflow
         env:
