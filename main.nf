@@ -87,10 +87,8 @@ log.info NfcoreSchema.params_summary_log(workflow, params, json_schema)
 def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = workflow.runName
-// TODO nf-core: Report custom parameters here
 summary['Input']            = params.input
 summary['Reference']        = params.reference
-summary['Data Type']        = params.single_end ? 'Single-End' : 'Paired-End'
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir']       = params.outdir
@@ -200,13 +198,12 @@ process build_references {
     file(gtf) from ch_gtf
 
     output:
-    file "${ref_name}" into ch_reference_build
+    file "${params.reference_name}" into ch_reference_build
 
     when:
     (!params.reference & !params.genome)
 
     script:
-    def ref_name = params.reference_name
     """
     cellranger mkgtf \
         $gtf \
@@ -214,7 +211,7 @@ process build_references {
         --attribute=gene_biotype:protein_coding
     
     cellranger mkref \
-        --genome=${ref_name} \
+        --genome=${params.reference_name} \
         --fasta=${fasta} \
         --genes=${gtf}
     """ 
@@ -259,10 +256,18 @@ process count {
     file "sample-${GEM}/outs/*"
 
     script:
-    def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
+    def reference_folder = params.prebuilt_reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     def sample_arg = sample.unique().join(",")
-    if ( params.reference ) {
+    if ( params.prebuilt_reference ) {
         """
+        cellranger count --id='sample-${GEM}' \
+        --fastqs=. \
+        --transcriptome=${reference_folder} \
+        --sample=${sample_arg}
+        """
+    } else if ( params.genome ) {
+        """
+        tar -zxvf ${reference}
         cellranger count --id='sample-${GEM}' \
         --fastqs=. \
         --transcriptome=${reference_folder} \
@@ -270,10 +275,9 @@ process count {
         """
     } else {
         """
-        tar -zxvf ${reference}
         cellranger count --id='sample-${GEM}' \
         --fastqs=. \
-        --transcriptome=${reference_folder} \
+        --transcriptome=${params.reference_name} \
         --sample=${sample_arg}
         """
     }
