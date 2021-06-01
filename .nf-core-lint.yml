@@ -16,7 +16,7 @@ files_exist:
 nextflow_config:
   - manifest.name
   - manifest.homePage
-actions_ci:
-conda_env_yaml:
-conda_dockerfile:
+actions_ci: False
+conda_env_yaml: False
+conda_dockerfile: False
   
