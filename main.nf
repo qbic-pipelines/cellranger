@@ -206,7 +206,7 @@ process build_references {
     (!params.reference & !params.genome)
 
     script:
-    def ref_name = params.reference_name?: "custom_reference"
+    def ref_name = params.reference_name
     """
     cellranger mkgtf \
         $gtf \
