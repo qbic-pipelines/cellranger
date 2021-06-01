@@ -13,9 +13,6 @@ files_unchanged:
 files_exist:
   - assets/nf-core-qbic-pipelines/cellranger_logo.png
   - docs/images/nf-core-qbic-pipelines/cellranger_logo.png
-nextflow_config:
-  - manifest.name
-  - manifest.homePage
 actions_ci: False
 conda_env_yaml: False
 conda_dockerfile: False
