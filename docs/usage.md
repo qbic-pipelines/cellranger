@@ -121,7 +121,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
 * `charliecloud`
   * A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
-  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
+  * Pulls software from Docker Hub: [`qbicpipelines/cellranger`](https://hub.docker.com/r/qbicpipelines/cellranger/
 * `conda`
   * Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter or Charliecloud.
   * A generic configuration profile to be used with [Conda](https://conda.io/docs/)
