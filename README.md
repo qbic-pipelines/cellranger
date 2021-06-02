@@ -90,7 +90,7 @@ The qbic-pipelines/cellranger pipeline comes with documentation about the pipeli
 
 ## Credits
 
-qbic-pipelines/cellranger was originally written by Gisela Gabernet.
+qbic-pipelines/cellranger was originally written by [Gisela Gabernet](https://github.com/ggabernet).
 
 ## Contributions and Support
 
