@@ -68,17 +68,30 @@
                     "description": "Do not load the iGenomes reference config.",
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
-                    "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
-                },
-                "reference": {
-                    "type": "string",
-                    "description": "Path to folder containing the reference files compatible with 10x cellranger.",
-                    "default": "False"
+                    "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.",
+                    "default": true
                 },
                 "save_reference": {
                     "type": "boolean",
                     "default": true,
                     "description": "Save the reference data to the ouput directory."
+                },
+                "reference_name": {
+                    "type": "string",
+                    "description": "Name of the custom reference",
+                    "default": "\"custom_reference\""
+                },
+                "fasta": {
+                    "type": "string",
+                    "description": "Path to genome fasta file, to build a custom reference."
+                },
+                "gtf": {
+                    "type": "string",
+                    "description": "Path to gene annotation gtf file, to build a custom reference."
+                },
+                "prebuilt_reference": {
+                    "type": "string",
+                    "description": "Path to folder with pre-built references."
                 }
             }
         },

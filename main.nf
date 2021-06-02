@@ -32,11 +32,6 @@ if (params.validate_params) {
 /* --     Collect configuration parameters     -- */
 ////////////////////////////////////////////////////
 
-// Check if genome exists in the config file
-if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
-    exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(', ')}"
-}
-
 // Check AWS batch settings
 if (workflow.profile.contains('awsbatch')) {
     // AWSBatch sanity checking
@@ -73,9 +68,13 @@ if (params.index_file) {
 }
 
 // Handle reference channels
-if (params.reference){
-    ch_reference_path = Channel.fromPath("${params.reference}")
-} else {
+if (params.prebuilt_reference){
+    if (params.genome) exit 1, "Please provide either a reference folder or a genome name, not both."
+    ch_reference_path = Channel.fromPath("${params.prebuilt_reference}")
+} else if (!params.genome) {
+    if (!params.fasta | !params.gtf) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a reference folder, or a fasta and gtf file."
+    if (params.fasta)  { ch_fasta = file(params.fasta, checkIfExists: true) } else { exit 1, "Please provide fasta file with the '--fasta' option." }
+    if (params.gtf)  { ch_gtf = file(params.gtf, checkIfExists: true) } else { exit 1, "Please provide gtf file with the '--gtf' option." }
     ch_reference_path = Channel.empty()
 }
 
@@ -88,10 +87,12 @@ log.info NfcoreSchema.params_summary_log(workflow, params, json_schema)
 def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = workflow.runName
-// TODO nf-core: Report custom parameters here
 summary['Input']            = params.input
-summary['Reference']        = params.reference
-summary['Data Type']        = params.single_end ? 'Single-End' : 'Paired-End'
+summary['Prebuilt Reference']  = params.prebuilt_reference
+summary['Genome Reference']    = params.genome
+summary['Genome fasta']        = params.fasta
+summary['Genome gtf']          = params.gtf
+summary['Custom reference name'] = params.reference_name
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir']       = params.outdir
@@ -160,10 +161,10 @@ process get_software_versions {
 }
 
 /* 
- * STEP 0 - BuildReferences
+ * STEP 0 A - GetReferences
  */
-process references {
-    tag "references"
+process get_references {
+    tag 'references'
     label 'process_low'
     publishDir path: { params.save_reference ? "${params.outdir}/references" : params.outdir },
                 saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
@@ -173,7 +174,7 @@ process references {
     file "refdata*" into ch_reference_sources
 
     when:
-    !params.reference
+    (!params.prebuilt_reference & !params.fasta & !params.gtf)
 
     script:
     if (params.genome == 'GRCh38') {
@@ -185,7 +186,39 @@ process references {
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
         """ 
     }
+}
 
+/* 
+ * STEP 0 B - BuildReferences
+ */
+process build_references {
+    tag 'build_references'
+    label 'process_high'
+    publishDir path: { params.save_reference ? "${params.outdir}/references" : params.outdir },
+                saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
+
+    input:
+    file(fasta) from ch_fasta
+    file(gtf) from ch_gtf
+
+    output:
+    file "${params.reference_name}" into ch_reference_build
+
+    when:
+    (!params.prebuilt_reference & !params.genome)
+
+    script:
+    """
+    cellranger mkgtf \
+        $gtf \
+        '${gtf.baseName}.filtered.gtf' \
+        --attribute=gene_biotype:protein_coding
+    
+    cellranger mkref \
+        --genome=${params.reference_name} \
+        --fasta=${fasta} \
+        --genes=${gtf}
+    """ 
 }
 
 /*
@@ -221,28 +254,41 @@ process count {
 
     input:
     tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
-    file(reference) from ch_reference_sources.mix( ch_reference_path ).collect()
+    file(reference) from ch_reference_sources.mix( ch_reference_path ).mix( ch_reference_build ).collect()
 
     output:
     file "sample-${GEM}/outs/*"
 
     script:
-    def reference_folder = params.reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
+    def reference_folder = params.prebuilt_reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     def sample_arg = sample.unique().join(",")
-    if ( params.reference ) {
+    if ( params.prebuilt_reference ) {
         """
         cellranger count --id='sample-${GEM}' \
-        --fastqs=. \
-        --transcriptome=${reference_folder} \
-        --sample=${sample_arg}
+            --fastqs=. \
+            --transcriptome=${reference_folder} \
+            --sample=${sample_arg} \
+            --localcores=${task.cpus} \
+            --localmem=${task.memory.toGiga()}
         """
-    } else {
+    } else if ( params.genome ) {
         """
         tar -zxvf ${reference}
         cellranger count --id='sample-${GEM}' \
-        --fastqs=. \
-        --transcriptome=${reference_folder} \
-        --sample=${sample_arg}
+            --fastqs=. \
+            --transcriptome=${reference_folder} \
+            --sample=${sample_arg} \
+            --localcores=${task.cpus} \
+            --localmem=${task.memory.toGiga()}
+        """
+    } else {
+        """
+        cellranger count --id='sample-${GEM}' \
+            --fastqs=. \
+            --transcriptome=${params.reference_name} \
+            --sample=${sample_arg} \
+            --localcores=${task.cpus} \
+            --localmem=${task.memory.toGiga()}
         """
     }
 }
@@ -330,7 +376,6 @@ workflow.onComplete {
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
-    // TODO nf-core: If not using MultiQC, strip out this code (including params.max_multiqc_email_size)
     // On success try attach the multiqc report
     def mqc_report = null
     try {

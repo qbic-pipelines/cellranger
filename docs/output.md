@@ -15,6 +15,7 @@ and processes data using the following steps:
 
 * [FastQC](#fastqc) - Read quality control
 * [MultiQC](#multiqc) - Aggregate report describing results from the whole pipeline
+* [Cell Ranger](#cell-ranger)
 * [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
 ## FastQC
@@ -46,6 +47,15 @@ For more information about how to use MultiQC reports, see [https://multiqc.info
   * `multiqc_report.html`: a standalone HTML file that can be viewed in your web browser.
   * `multiqc_data/`: directory containing parsed statistics from the different tools used in the pipeline.
   * `multiqc_plots/`: directory containing static images from the report in various formats.
+
+## Cell Ranger
+
+[Cell ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) is a set of analysis pipelines that process Chromium single-cell data to align reads, generate feature-barcode matrices, other secondary analysis, and more. This Nextflow pipeline uses the `cellranger count` piipeline only, which takes FASTQ files and performs alignment, filtering, barcode counting and UMI counting.
+
+**Output files:**
+
+* `cellranger_count/`
+  * `sample-<sampleID>`
 
 ## Pipeline information
 
