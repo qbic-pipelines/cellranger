@@ -109,7 +109,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 
 * `docker`
   * A generic configuration profile to be used with [Docker](https://docker.com/)
-  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
+  * Pulls software from Docker Hub: [`qbicpipelines/cellranger`](https://hub.docker.com/r/qbicpipelines/cellranger/)
 * `singularity`
   * A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
   * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
