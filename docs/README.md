@@ -1,4 +1,4 @@
-# nf-core/qbic-pipelines-cellranger: Documentation
+# qbic-pipelines/cellranger: Documentation
 
 The nf-core/qbic-pipelines-cellranger documentation is split into the following pages:
 
