@@ -35,7 +35,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
     nextflow run qbic-pipelines/cellranger -profile <docker/singularity/podman/conda/institute> --input 'samplesheet.tsv' --genome GRCh38
     ```
 
-See [usage docs](https://nf-co.re/qbic-pipelines-cellranger/usage) for all of the available options when running the pipeline.
+See [usage docs](./docs/usage.md) for all of the available options when running the pipeline.
 
 ## Updating the pipeline container and making a new release
 
