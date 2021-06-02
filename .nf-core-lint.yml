@@ -11,6 +11,7 @@ files_unchanged:
   - assets/sendmail_template.txt
   - assets/multiqc_config.yaml
   - CODE_OF_CONDUCT.md
+  - docs/README.md
 files_exist:
   - assets/nf-core-qbic-pipelines/cellranger_logo.png
   - docs/images/nf-core-qbic-pipelines/cellranger_logo.png
