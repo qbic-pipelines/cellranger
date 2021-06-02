@@ -59,7 +59,11 @@ GEM2  pbmc2_1k_v3_mini  L001  pbmc2_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc2_1k
 * R2: Second mate (R2) of fastq files.
 * I1: Index file (optional). If index file is provided, please set the flag `--index_file true`.
 
-### Reference data
+### Genome reference data
+
+Genome reference data can be provided in several ways.
+
+#### Using 10x genomics pre-built references
 
 The reference data provided by 10x genomics is automatically downloaded in this pipeline. Only human (`GRCh38`) and mouse references (`mm10`) are supported. Please set the following:
 
@@ -67,6 +71,22 @@ The reference data provided by 10x genomics is automatically downloaded in this 
 * Mouse data: `--genome mm10`
 
 If you want to save these references for use in other analysis, you can provide the parameter `--save_references`. Then in your next run, the path to the saved references can be provided with the `--reference` parameter.
+
+#### Providing custom fasta and gtf files
+
+To build custom references as part of the pipeline, you can provide a fasta and a gtf file (best is from Ensembl):
+
+```bash
+--gtf gtf_file.gtf --fasta genome_fasta.fa --reference_name my_custom_reference
+```
+
+#### Providing a pre-built reference
+
+If you have already a pre-built reference folder, it can also be directly provided:
+
+```bash
+--prebuilt_reference reference
+```
 
 ## Core Nextflow arguments
 
