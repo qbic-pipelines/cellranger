@@ -18,7 +18,7 @@ Please delete this text and anything that's not relevant from the template below
 I have checked the following places for your error:
 
 - [ ] [nf-core website: troubleshooting](https://nf-co.re/usage/troubleshooting)
-- [ ] [nf-core/qbic-pipelines-cellranger pipeline documentation](https://nf-co.re/nf-core/qbic-pipelines-cellranger/usage)
+- [ ] [qbic-pipelines/cellranger pipeline documentation](https://github.com/qbic-pipelines/cellranger/blob/master/docs/usage.md)
 
 ## Description of the bug
 
