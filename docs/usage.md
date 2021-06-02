@@ -115,10 +115,10 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   * Pulls software from Docker Hub: [`qbicpipelines/cellranger`](https://hub.docker.com/r/qbicpipelines/cellranger/)
 * `podman`
   * A generic configuration profile to be used with [Podman](https://podman.io/)
-  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
+  * Pulls software from Docker Hub:[`qbicpipelines/cellranger`](https://hub.docker.com/r/qbicpipelines/cellranger/
 * `shifter`
   * A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
-  * Pulls software from Docker Hub: [`nfcore/qbic-pipelines-cellranger`](https://hub.docker.com/r/nfcore/qbic-pipelines-cellranger/)
+  * Pulls software from Docker Hub: [`qbicpipelines/cellranger`](https://hub.docker.com/r/qbicpipelines/cellranger/
 * `charliecloud`
   * A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
   * Pulls software from Docker Hub: [`qbicpipelines/cellranger`](https://hub.docker.com/r/qbicpipelines/cellranger/)
