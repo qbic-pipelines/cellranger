@@ -96,8 +96,6 @@ qbic-pipelines/cellranger was originally written by [Gisela Gabernet](https://gi
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
-For further information or help, don't hesitate to get in touch on the [Slack `#qbic-pipelines-cellranger` channel](https://nfcore.slack.com/channels/qbic-pipelines-cellranger) (you can join with [this invite](https://nf-co.re/join/slack)).
-
 ## Citations
 
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi. -->
