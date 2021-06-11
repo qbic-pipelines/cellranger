@@ -81,6 +81,7 @@ if (params.prebuilt_reference){
 } else {
     ch_fasta = Channel.empty()
     ch_gtf = Channel.empty()
+    ch_reference_path = Channel.empty()
 }
 
 ////////////////////////////////////////////////////
