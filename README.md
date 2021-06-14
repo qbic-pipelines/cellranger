@@ -2,7 +2,7 @@
 
 **Nextflow wrapper around the Cell Ranger pipeline for single cell RNAseq analysis**.
 
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.10.0-brightgreen.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A521.04.1-brightgreen.svg)](https://www.nextflow.io/)
 [![GitHub Actions CI Status](https://github.com/qbic-pipelines/cellranger/workflows/nf-core%20CI/badge.svg)](https://github.com/qbic-pipelines/cellranger/actions)
 
 ## Introduction
