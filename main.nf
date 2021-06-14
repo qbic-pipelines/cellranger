@@ -297,6 +297,12 @@ process count {
             --localmem=${task.memory.toGiga()}
         """
     }
+
+    stub:
+    """
+    mkdir -p "sample-${GEM}/outs/"
+    touch sample-${GEM}/outs/fake_file.txt
+    """
 }
 
 /*
