@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added`
 
+* Using stub feature for CI tests.
+
 ### `Fixed`
 
-Fixed channel issues when not providing a reference file.
+* Fixed channel issues when not providing a reference file.
+
 ### `Dependencies`
 
 ### `Deprecated`
-
 
 ## v1.0 - Mordor
 
