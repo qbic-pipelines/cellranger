@@ -2,12 +2,11 @@
 
 **Nextflow wrapper around the Cell Ranger pipeline for single cell RNAseq analysis**.
 
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.10.0-brightgreen.svg)](https://www.nextflow.io/)
-[![Docker](https://img.shields.io/docker/automated/nfcore/qbic-pipelines-cellranger.svg)](https://hub.docker.com/r/qbicpipelines/cellranger)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A521.04.1-brightgreen.svg)](https://www.nextflow.io/)
+[![GitHub Actions CI Status](https://github.com/qbic-pipelines/cellranger/workflows/nf-core%20CI/badge.svg)](https://github.com/qbic-pipelines/cellranger/actions)
 
 ## Introduction
 
-<!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
 **qbic-pipelines/cellranger** is a Nextflow pipeline that wraps the Cell Ranger pipeline for single cell RNAseq analysis. It additionally performs QC on the Fastq files
 with `FastQC` and summarizes the QC with `MultiQC`.
 

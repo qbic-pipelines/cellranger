@@ -71,10 +71,16 @@ if (params.index_file) {
 if (params.prebuilt_reference){
     if (params.genome) exit 1, "Please provide either a reference folder or a genome name, not both."
     ch_reference_path = Channel.fromPath("${params.prebuilt_reference}")
+    ch_fasta = Channel.empty()
+    ch_gtf = Channel.empty()
 } else if (!params.genome) {
     if (!params.fasta | !params.gtf) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a reference folder, or a fasta and gtf file."
     if (params.fasta)  { ch_fasta = file(params.fasta, checkIfExists: true) } else { exit 1, "Please provide fasta file with the '--fasta' option." }
     if (params.gtf)  { ch_gtf = file(params.gtf, checkIfExists: true) } else { exit 1, "Please provide gtf file with the '--gtf' option." }
+    ch_reference_path = Channel.empty()
+} else {
+    ch_fasta = Channel.empty()
+    ch_gtf = Channel.empty()
     ch_reference_path = Channel.empty()
 }
 
@@ -291,6 +297,12 @@ process count {
             --localmem=${task.memory.toGiga()}
         """
     }
+
+    stub:
+    """
+    mkdir -p "sample-${GEM}/outs/"
+    touch sample-${GEM}/outs/fake_file.txt
+    """
 }
 
 /*
