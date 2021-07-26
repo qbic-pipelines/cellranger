@@ -56,16 +56,26 @@ if (params.input)  { ch_metadata = file(params.input, checkIfExists: true) } els
 if (params.index_file) {
     Channel.from( ch_metadata )
             .splitCsv(header: true, sep:'\t')
-            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true), file("${col.I1}", checkifExists: true)) }
+            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Analysis}","${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true), file("${col.I1}", checkifExists: true)) }
             .dump()
-            .into{ ch_read_files_fastqc; ch_read_files_count }
+            .into{ ch_read_files_fastqc; ch_read_files_cellranger }
 } else {
     Channel.from( ch_metadata )
             .splitCsv(header: true, sep:'\t')
-            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true)) }
+            .map { col -> tuple("${col.GEM}", "${col.Sample}", "${col.Analysis}", "${col.Lane}", file("${col.R1}", checkifExists: true),file("${col.R2}", checkifExists: true)) }
             .dump()
-            .into{ ch_read_files_fastqc; ch_read_files_count }
+            .into{ ch_read_files_fastqc; ch_read_files_cellranger }
 }
+
+// Split fastqs into different seq modalities: GEX, VDJ
+ch_read_files_cellranger.branch{
+    gex: it[2] == "GEX"
+    vdj: it[2] == "VDJ"
+}
+.set { ch_cellranger_branch }
+
+ch_read_files_count = ch_cellranger_branch.gex.dump(tag: "branch_gex")
+ch_read_files_vdj = ch_cellranger_branch.vdj.dump(tag: "branch_vdj")
 
 // Handle reference channels
 if (params.prebuilt_reference){
@@ -239,7 +249,7 @@ process fastqc {
         }
 
     input:
-    tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_fastqc
+    tuple val(GEM), val(sample), val(analysis), val(lane), file(R1), file(R2) from ch_read_files_fastqc
 
     output:
     file '*_fastqc.{zip,html}' into ch_fastqc_results
@@ -259,7 +269,7 @@ process count {
     publishDir "${params.outdir}/cellranger_count", mode: params.publish_dir_mode
 
     input:
-    tuple val(GEM), val(sample), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
+    tuple val(GEM), val(sample), val(analysis), val(lane), file(R1), file(R2) from ch_read_files_count.groupTuple()
     file(reference) from ch_reference_sources.mix( ch_reference_path ).mix( ch_reference_build ).collect()
 
     output:
