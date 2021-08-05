@@ -18,14 +18,14 @@ process CELLRANGER_COUNT {
     path(reference)
 
     output:
-    path("sample-${GEM}/outs/*"), emit: outs
+    path("sample-${meta.gem}/outs/*"), emit: outs
 
     script:
     def reference_folder = params.prebuilt_reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     def sample_arg = meta.samples.unique().join(",")
     if ( params.prebuilt_reference ) {
         """
-        cellranger count --id='sample-${GEM}' \
+        cellranger count --id='sample-${meta.gem}' \
             --fastqs=. \
             --transcriptome=${reference_folder} \
             --sample=${sample_arg} \
@@ -35,7 +35,7 @@ process CELLRANGER_COUNT {
     } else if ( params.genome ) {
         """
         tar -zxvf ${reference}
-        cellranger count --id='sample-${GEM}' \
+        cellranger count --id='sample-${meta.gem}' \
             --fastqs=. \
             --transcriptome=${reference_folder} \
             --sample=${sample_arg} \
@@ -44,7 +44,7 @@ process CELLRANGER_COUNT {
         """
     } else {
         """
-        cellranger count --id='sample-${GEM}' \
+        cellranger count --id='sample-${meta.gem}' \
             --fastqs=. \
             --transcriptome=${params.reference_name} \
             --sample=${sample_arg} \
@@ -55,7 +55,7 @@ process CELLRANGER_COUNT {
 
     stub:
     """
-    mkdir -p "sample-${GEM}/outs/"
-    touch sample-${GEM}/outs/fake_file.txt
+    mkdir -p "sample-${meta.gem}/outs/"
+    touch sample-${meta.gem}/outs/fake_file.txt
     """
 }
