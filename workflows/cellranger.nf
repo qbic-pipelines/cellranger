@@ -120,13 +120,18 @@ workflow CELLRANGER {
     }
 
     ch_cellranger_count = ch_reads.dump(tag: 'before merge')
-                                    .map{ it -> [ it[0].GEM, it[0], it[1] ] }
+                                    .map{ it -> [ it[0].gem, it[0].sample, it[1] ] }
                                     .groupTuple()
                                     .dump(tag: 'gem merge')
+                                    .map{ WorkflowCellranger.get_meta_tabs(it) }
+                                    .dump(tag: 'rearr merge')
     //
     // MODULE: Cellranger count
     //
-
+    CELLRANGER_COUNT(
+        ch_cellranger_count,
+        ch_reference
+    )
 
     //
     // MODULE: Pipeline reporting
