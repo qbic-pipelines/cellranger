@@ -18,7 +18,7 @@ process CELLRANGER_MKREF {
     path(gtf)
 
     output:
-    path("refdata*"), emit: reference
+    path("${params.reference_name}"), emit: reference
 
     script:
     """
