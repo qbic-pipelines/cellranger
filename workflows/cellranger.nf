@@ -123,7 +123,7 @@ workflow CELLRANGER {
                                     .map{ it -> [ it[0].gem, it[0].sample, it[1] ] }
                                     .groupTuple()
                                     .dump(tag: 'gem merge')
-                                    .map{ WorkflowCellranger.get_meta_tabs(it) }
+                                    .map{ get_meta_tabs(it) }
                                     .dump(tag: 'rearr merge')
     //
     // MODULE: Cellranger count
@@ -686,3 +686,13 @@ workflow.onComplete {
 //         }
 //     }
 // }
+
+    def get_meta_tabs(arr) {
+        def meta = [:]
+        meta.gem          = arr[0]
+        meta.samples      = arr[1]
+
+        def array = []
+        array = [ meta, arr[2].flatten() ]
+        return array
+    }

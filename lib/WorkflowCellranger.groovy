@@ -12,15 +12,15 @@ class WorkflowCellranger {
     }
 
     // Function to map
-    public static Array get_meta_tabs(arr) {
-        def meta = [:]
-        meta.gem          = arr[0]
-        meta.samples      = arr[1]
+    // public static Array get_meta_tabs(arr) {
+    //     def meta = [:]
+    //     meta.gem          = arr[0]
+    //     meta.samples      = arr[1]
 
-        def array = []
-        array = [ meta, arr[2].flatten() ]
-        return array
-    }
+    //     def array = []
+    //     array = [ meta, arr[2].flatten() ]
+    //     return array
+    // }
 
     //
     // Get workflow summary for MultiQC
