@@ -33,7 +33,7 @@ WorkflowMain.initialise(workflow, params, log)
 include { CELLRANGER } from './workflows/cellranger'
 
 //
-// WORKFLOW: Run main nf-core/cellranger analysis pipeline
+// WORKFLOW: Run main qbic-pipelines/cellranger analysis pipeline
 //
 workflow {
     CELLRANGER ()
