@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v2.0dev -
 
 * Ported pipeline to Nextflow DSL2.
+
 ### `Added`
 
 * Bump versions 2.0.
