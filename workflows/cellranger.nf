@@ -83,7 +83,7 @@ include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( op
 // Info required for completion email and summary
 def multiqc_report = []
 
-workflow CELLRANGER {
+workflow CELLRANGER_GEX {
 
     ch_software_versions = Channel.empty()
 
@@ -109,17 +109,20 @@ workflow CELLRANGER {
     // MODULE: Get references
     //
 
-    //TODO collect versions
     if (!params.prebuilt_reference & !params.fasta & !params.gtf) {
         CELLRANGER_GETREFERENCES()
         ch_reference = CELLRANGER_GETREFERENCES.out.reference
+        ch_reference_version = CELLRANGER_GETREFERENCES.out.version.first().ifEmpty(null)
     } else if (!params.prebuilt_reference & !params.genome) {
         CELLRANGER_MKREF(
             ch_fasta,
             ch_gtf
         )
         ch_reference = CELLRANGER_MKREF.out.reference
+        ch_reference_version = CELLRANGER_MKREF.out.version.first().ifEmpty(null)
     }
+
+    ch_software_versions = ch_software_versions.mix(ch_reference_version.ifEmpty(null))
 
     ch_cellranger_count = ch_reads.dump(tag: 'before merge')
                                     .map{ it -> [ it[0].gem, it[0].sample, it[1] ] }
@@ -127,15 +130,15 @@ workflow CELLRANGER {
                                     .dump(tag: 'gem merge')
                                     .map{ get_meta_tabs(it) }
                                     .dump(tag: 'rearr merge')
+
     //
     // MODULE: Cellranger count
     //
-
-    //TODO: collect cellranger versions
     CELLRANGER_COUNT(
         ch_cellranger_count,
         ch_reference
     )
+    ch_software_versions = ch_software_versions.mix(CELLRANGER_COUNT.out.version.ifEmpty(null))
 
     //
     // MODULE: Pipeline reporting

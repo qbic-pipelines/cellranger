@@ -30,13 +30,15 @@ WorkflowMain.initialise(workflow, params, log)
 ========================================================================================
 */
 
-include { CELLRANGER } from './workflows/cellranger'
+include { CELLRANGER_GEX } from './workflows/cellranger'
 
 //
 // WORKFLOW: Run main qbic-pipelines/cellranger analysis pipeline
 //
 workflow {
-    CELLRANGER ()
+    if (params.cellranger_option = "GEX") {
+        CELLRANGER_GEX ()
+    }
 }
 
 /*
