@@ -22,7 +22,7 @@ process CELLRANGER_COUNT {
     path "*.version.txt", emit: version
 
     script:
-    def reference_folder = params.prebuilt_reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
+    def reference_folder = params.prebuilt_reference ?: (params.genome == 'GRCh38') ? 'refdata-gex-GRCh38-2020-A' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     def sample_arg = meta.samples.unique().join(",")
     if ( params.prebuilt_reference ) {
         """
