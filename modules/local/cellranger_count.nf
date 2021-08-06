@@ -19,6 +19,7 @@ process CELLRANGER_COUNT {
 
     output:
     path("sample-${meta.gem}/outs/*"), emit: outs
+    path "*.version.txt", emit: version
 
     script:
     def reference_folder = params.prebuilt_reference ?: (params.genome == 'GRCh38') ? 'refdata-cellranger-GRCh38-3.0.0' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
@@ -31,6 +32,8 @@ process CELLRANGER_COUNT {
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
             --localmem=${task.memory.toGiga()}
+
+        cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
         """
     } else if ( params.genome ) {
         """
@@ -41,6 +44,8 @@ process CELLRANGER_COUNT {
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
             --localmem=${task.memory.toGiga()}
+
+        cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
         """
     } else {
         """
@@ -50,6 +55,8 @@ process CELLRANGER_COUNT {
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
             --localmem=${task.memory.toGiga()}
+
+        cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
         """
     }
 
@@ -57,5 +64,6 @@ process CELLRANGER_COUNT {
     """
     mkdir -p "sample-${meta.gem}/outs/"
     touch sample-${meta.gem}/outs/fake_file.txt
+    cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
     """
 }

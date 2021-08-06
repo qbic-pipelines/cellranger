@@ -19,6 +19,7 @@ process CELLRANGER_MKREF {
 
     output:
     path("${params.reference_name}"), emit: reference
+    path "*.version.txt", emit: version
 
     script:
     """
@@ -31,5 +32,7 @@ process CELLRANGER_MKREF {
         --genome=${params.reference_name} \\
         --fasta=${fasta} \\
         --genes=${gtf}
+
+    cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
     """
 }
