@@ -19,7 +19,7 @@ process CELLRANGER_GETREFERENCES {
     }
 
     output:
-    path("$reference_name"), emit: reference
+    path("$reference_name/*"), emit: reference
     val("$reference_name"), emit: reference_name
 
 
