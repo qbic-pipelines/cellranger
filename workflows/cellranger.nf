@@ -112,7 +112,7 @@ workflow CELLRANGER_GEX {
     if (!params.prebuilt_reference & !params.fasta & !params.gtf) {
         CELLRANGER_GETREFERENCES()
         ch_reference = CELLRANGER_GETREFERENCES.out.reference
-        ch_reference_version = CELLRANGER_GETREFERENCES.out.version.first().ifEmpty(null)
+        ch_reference_version = Channel.empty()
     } else if (!params.prebuilt_reference & !params.genome) {
         CELLRANGER_MKREF(
             ch_fasta,

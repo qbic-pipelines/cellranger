@@ -21,10 +21,11 @@ process CELLRANGER_GETREFERENCES {
     output:
     path("refdata*"), emit: reference
 
+
     script:
     if (params.genome == 'GRCh38') {
         """
-        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
+        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
         """
     } else if ( params.genome == 'mm10' ) {
         """
