@@ -28,13 +28,13 @@ process CELLRANGER_GETREFERENCES {
         def reference_name = 'refdata-gex-GRCh38-2020-A'
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
-        tar -xvz refdata-gex-GRCh38-2020-A.tar.gz
+        tar -xvzf refdata-gex-GRCh38-2020-A.tar.gz
         """
     } else if ( params.genome == 'mm10' ) {
         def reference_name = 'refdata-gex-mm10-2020-A'
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
-        tar -xvz refdata-gex-mm10-2020-A.tar.gz
+        tar -xvzf refdata-gex-mm10-2020-A.tar.gz
         """
     }
 }
