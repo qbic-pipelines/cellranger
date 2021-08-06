@@ -4,7 +4,7 @@ params.options = [:]
 def options    = initOptions(params.options)
 
 process CELLRANGER_COUNT {
-    tag '$meta.gem'
+    tag "$meta.gem"
     label 'process_high'
 
     publishDir "${params.outdir}",
