@@ -19,7 +19,7 @@ process CELLRANGER_MKREF {
 
     output:
     path("${params.reference_name}"), emit: reference
-    val(reference_name), emit: reference_namee
+    val(reference_name), emit: reference_name
     path "*.version.txt", emit: version
 
     script:
