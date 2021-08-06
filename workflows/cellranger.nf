@@ -142,8 +142,7 @@ workflow CELLRANGER_GEX {
     //
     CELLRANGER_COUNT(
         ch_cellranger_count,
-        ch_reference,
-        ch_reference_name
+        ch_reference
     )
     ch_software_versions = ch_software_versions.mix(CELLRANGER_COUNT.out.version.ifEmpty(null))
 
