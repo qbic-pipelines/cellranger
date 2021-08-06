@@ -16,7 +16,6 @@ process CELLRANGER_COUNT {
     input:
     tuple val(meta), path(reads)
     path(reference)
-    val(reference_name)
 
     output:
     path("sample-${meta.gem}/outs/*"), emit: outs
@@ -24,6 +23,7 @@ process CELLRANGER_COUNT {
 
     script:
     def sample_arg = meta.samples.unique().join(",")
+    def reference_name = reference.name
     """
     cellranger count --id='sample-${meta.gem}' \
         --fastqs=. \
