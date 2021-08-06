@@ -19,7 +19,7 @@ process CELLRANGER_GETREFERENCES {
     }
 
     output:
-    path("$reference_name/*"), emit: reference
+    path("refdata-*"), emit: reference
     val("$reference_name"), emit: reference_name
 
 
@@ -29,12 +29,14 @@ process CELLRANGER_GETREFERENCES {
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
         tar -xvzf refdata-gex-GRCh38-2020-A.tar.gz
+        rm *.tar.gz
         """
     } else if ( params.genome == 'mm10' ) {
         def reference_name = 'refdata-gex-mm10-2020-A'
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
         tar -xvzf refdata-gex-mm10-2020-A.tar.gz
+        rm *.tar.gz
         """
     }
 }
