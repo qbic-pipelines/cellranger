@@ -24,29 +24,16 @@ process CELLRANGER_COUNT {
 
     script:
     def sample_arg = meta.samples.unique().join(",")
-    if ( params.prebuilt_reference | params.genome ) {
-        """
-        cellranger count --id='sample-${meta.gem}' \
-            --fastqs=. \
-            --transcriptome=${reference_name} \
-            --sample=${sample_arg} \
-            --localcores=${task.cpus} \
-            --localmem=${task.memory.toGiga()}
+    """
+    cellranger count --id='sample-${meta.gem}' \
+        --fastqs=. \
+        --transcriptome=${reference_name} \
+        --sample=${sample_arg} \
+        --localcores=${task.cpus} \
+        --localmem=${task.memory.toGiga()}
 
-        cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
-        """
-    } else {
-        """
-        cellranger count --id='sample-${meta.gem}' \
-            --fastqs=. \
-            --transcriptome=${reference_name} \
-            --sample=${sample_arg} \
-            --localcores=${task.cpus} \
-            --localmem=${task.memory.toGiga()}
-
-        cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
-        """
-    }
+    cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
+    """
 
     stub:
     """
