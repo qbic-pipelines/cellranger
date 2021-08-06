@@ -134,6 +134,8 @@ workflow CELLRANGER_GEX {
                                     .map{ get_meta_tabs(it) }
                                     .dump(tag: 'rearr merge')
 
+    ch_reference_name.dump(tag: 'reference name')
+
     //
     // MODULE: Cellranger count
     //
