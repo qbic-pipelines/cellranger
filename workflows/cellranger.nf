@@ -22,6 +22,7 @@ if (params.enable_conda) { exit 1, "This pipeline does not support conda, as Cel
 if (params.prebuilt_reference){
     if (params.genome) exit 1, "Please provide either a reference folder or a genome name, not both."
     ch_reference = Channel.fromPath("${params.prebuilt_reference}")
+    ch_reference_name = Channel.value("${params.reference_name}")
 } else if (!params.genome) {
     if (!params.fasta | !params.gtf) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a reference folder, or a fasta and gtf file."
     if (params.fasta)  { ch_fasta = file(params.fasta, checkIfExists: true) } else { exit 1, "Please provide fasta file with the '--fasta' option." }
@@ -113,6 +114,7 @@ workflow CELLRANGER_GEX {
         CELLRANGER_GETREFERENCES()
         ch_reference = CELLRANGER_GETREFERENCES.out.reference
         ch_reference_version = Channel.empty()
+        ch_reference_name = CELLRANGER_GETREFERENCES.out.reference_name
     } else if (!params.prebuilt_reference & !params.genome) {
         CELLRANGER_MKREF(
             ch_fasta,
@@ -120,6 +122,7 @@ workflow CELLRANGER_GEX {
         )
         ch_reference = CELLRANGER_MKREF.out.reference
         ch_reference_version = CELLRANGER_MKREF.out.version.first().ifEmpty(null)
+        ch_reference_name = CELLRANGER_MKREF.out.reference_name
     }
 
     ch_software_versions = ch_software_versions.mix(ch_reference_version.ifEmpty(null))
@@ -136,7 +139,8 @@ workflow CELLRANGER_GEX {
     //
     CELLRANGER_COUNT(
         ch_cellranger_count,
-        ch_reference
+        ch_reference,
+        ch_reference_name
     )
     ch_software_versions = ch_software_versions.mix(CELLRANGER_COUNT.out.version.ifEmpty(null))
 

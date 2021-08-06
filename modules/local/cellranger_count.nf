@@ -16,31 +16,19 @@ process CELLRANGER_COUNT {
     input:
     tuple val(meta), path(reads)
     path(reference)
+    val(reference_name)
 
     output:
     path("sample-${meta.gem}/outs/*"), emit: outs
     path "*.version.txt", emit: version
 
     script:
-    def reference_folder = params.prebuilt_reference ?: (params.genome == 'GRCh38') ? 'refdata-gex-GRCh38-2020-A' : ( params.genome == 'mm10') ? 'refdata-gex-mm10-2020-A' : ''
     def sample_arg = meta.samples.unique().join(",")
-    if ( params.prebuilt_reference ) {
+    if ( params.prebuilt_reference | params.genome ) {
         """
         cellranger count --id='sample-${meta.gem}' \
             --fastqs=. \
-            --transcriptome=${reference_folder} \
-            --sample=${sample_arg} \
-            --localcores=${task.cpus} \
-            --localmem=${task.memory.toGiga()}
-
-        cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
-        """
-    } else if ( params.genome ) {
-        """
-        tar -zxvf ${reference}
-        cellranger count --id='sample-${meta.gem}' \
-            --fastqs=. \
-            --transcriptome=${reference_folder} \
+            --transcriptome=${reference_name} \
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
             --localmem=${task.memory.toGiga()}
@@ -51,7 +39,7 @@ process CELLRANGER_COUNT {
         """
         cellranger count --id='sample-${meta.gem}' \
             --fastqs=. \
-            --transcriptome=${params.reference_name} \
+            --transcriptome=${reference_name} \
             --sample=${sample_arg} \
             --localcores=${task.cpus} \
             --localmem=${task.memory.toGiga()}
