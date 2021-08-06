@@ -16,6 +16,7 @@ process CELLRANGER_MKREF {
     input:
     path(fasta)
     path(gtf)
+    val(reference_name)
 
     output:
     path("${params.reference_name}"), emit: reference
@@ -23,7 +24,6 @@ process CELLRANGER_MKREF {
     path "*.version.txt", emit: version
 
     script:
-    def reference_name = params.reference_name
     """
     cellranger mkgtf \\
         $gtf \\

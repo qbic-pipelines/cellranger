@@ -20,7 +20,7 @@ process CELLRANGER_GETREFERENCES {
 
     output:
     path("refdata-*"), emit: reference
-    val(reference_name), emit: reference_name
+    val("$reference_name"), emit: reference_name
 
 
     script:
