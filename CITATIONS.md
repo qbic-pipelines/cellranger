@@ -18,7 +18,6 @@
 * [10x Genomics Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger)
     > Zheng, G. X. Y. et al. Massively parallel digital transcriptional profiling of single cells. Nat Commun 8, 14049 (2017). doi: 10.1038/ncomms14049.
 
-
 ## Software packaging/containerisation tools
 
 * [Anaconda](https://anaconda.com)

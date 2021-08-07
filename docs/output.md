@@ -27,9 +27,9 @@ For further reading and documentation see the [FastQC help pages](http://www.bio
 **Output files:**
 
 * `fastqc/`
-  * `*_fastqc.html`: FastQC report containing quality metrics for your untrimmed raw fastq files.
+    * `*_fastqc.html`: FastQC report containing quality metrics for your untrimmed raw fastq files.
 * `fastqc/zips/`
-  * `*_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
+    * `*_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
 
 > **NB:** The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality.
 
@@ -44,9 +44,9 @@ For more information about how to use MultiQC reports, see [https://multiqc.info
 **Output files:**
 
 * `multiqc/`
-  * `multiqc_report.html`: a standalone HTML file that can be viewed in your web browser.
-  * `multiqc_data/`: directory containing parsed statistics from the different tools used in the pipeline.
-  * `multiqc_plots/`: directory containing static images from the report in various formats.
+    * `multiqc_report.html`: a standalone HTML file that can be viewed in your web browser.
+    * `multiqc_data/`: directory containing parsed statistics from the different tools used in the pipeline.
+    * `multiqc_plots/`: directory containing static images from the report in various formats.
 
 ## Cell Ranger
 
@@ -55,7 +55,7 @@ For more information about how to use MultiQC reports, see [https://multiqc.info
 **Output files:**
 
 * `cellranger_count/`
-  * `sample-<sampleID>`
+    * `sample-<sampleID>`
 
 ## Pipeline information
 
