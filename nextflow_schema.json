@@ -33,10 +33,15 @@
                     "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
                     "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
                 },
-                "index_file": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-barcode",
-                    "description": "File with index reads is provided."
+                "cellranger_mode": {
+                    "type": "string",
+                    "default": "GEX",
+                    "description": "Option selecting which cellranger workflow to run: choose from GEX (gene expression only), and multi (including GEX, FB , TCR and BCR files if available).",
+                    "enum": [
+                        "GEX",
+                        "multi"
+                    ],
+                    "fa_icon": "fas fa-cog"
                 }
             }
         },
@@ -179,6 +184,20 @@
                     "description": "Show all params when using `--help`",
                     "hidden": true,
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
+                },
+                "multiqc_title": {
+                    "type": "string",
+                    "description": "MultiQC report title",
+                    "hidden": true
+                },
+                "enable_conda": {
+                    "type": "boolean",
+                    "description": "Enable running the pipeline with conda"
+                },
+                "singularity_pull_docker_container": {
+                    "type": "boolean",
+                    "description": "Enable pulling docker container for singularity",
+                    "default": true
                 }
             }
         },

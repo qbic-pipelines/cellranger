@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added`
 
 * Bump versions 2.0.
+* `cellranger_mode` parameter, allows to select the cellranger operation mode: `GEX` or `multi` are supported.
 
 ### `Fixed`
 
@@ -19,8 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Dependencies`
 
 * Updated GRCh38 cellranger GEX reference
+
 ### `Deprecated`
 
+* `index_file` parameter is deprecated as it is no longer needed.
 ## v1.0.1 - Mordor - patch
 
 ### `Added`
