@@ -7,4 +7,5 @@ tests/
 testing/
 testing*
 *.pyc
-.vscode/*
+cellranger*
+.vscode/
