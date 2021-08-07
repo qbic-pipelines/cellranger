@@ -11,6 +11,7 @@ lint:
     - assets/email_template.txt
     - assets/sendmail_template.txt
     - assets/multiqc_config.yaml
+    - bin/scrape_software_versions.py
     - CODE_OF_CONDUCT.md
     - docs/README.md
     - .gitignore

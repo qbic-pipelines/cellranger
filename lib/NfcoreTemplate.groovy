@@ -12,9 +12,9 @@ class NfcoreTemplate {
     public static void awsBatch(workflow, params) {
         if (workflow.profile.contains('awsbatch')) {
             // Check params.awsqueue and params.awsregion have been set if running on AWSBatch
-            assert (params.awsqueue && params.awsregion) : 'Specify correct --awsqueue and --awsregion parameters on AWSBatch!'
+            assert (params.awsqueue && params.awsregion) : "Specify correct --awsqueue and --awsregion parameters on AWSBatch!"
             // Check outdir paths to be S3 buckets if running on AWSBatch
-            assert params.outdir.startsWith('s3:')       : 'Outdir not on S3 - specify S3 Bucket to run on AWSBatch!'
+            assert params.outdir.startsWith('s3:')       : "Outdir not on S3 - specify S3 Bucket to run on AWSBatch!"
         }
     }
 
@@ -25,7 +25,7 @@ class NfcoreTemplate {
         Map colors = logColours(params.monochrome_logs)
         if (params.hostnames) {
             try {
-                def hostname = 'hostname'.execute().text.trim()
+                def hostname = "hostname".execute().text.trim()
                 params.hostnames.each { prof, hnames ->
                     hnames.each { hname ->
                         if (hostname.contains(hname) && !workflow.profile.contains(prof)) {
@@ -47,6 +47,7 @@ class NfcoreTemplate {
     // Construct and send completion email
     //
     public static void email(workflow, params, summary_params, projectDir, log, multiqc_report=[]) {
+
         // Set up the e-mail variables
         def subject = "[$workflow.manifest.name] Successful: $workflow.runName"
         if (!workflow.success) {
@@ -149,9 +150,9 @@ class NfcoreTemplate {
         if (!output_d.exists()) {
             output_d.mkdirs()
         }
-        def output_hf = new File(output_d, 'pipeline_report.html')
+        def output_hf = new File(output_d, "pipeline_report.html")
         output_hf.withWriter { w -> w << email_html }
-        def output_tf = new File(output_d, 'pipeline_report.txt')
+        def output_tf = new File(output_d, "pipeline_report.txt")
         output_tf.withWriter { w -> w << email_txt }
     }
 
@@ -254,7 +255,7 @@ class NfcoreTemplate {
     public static String logo(workflow, monochrome_logs) {
         Map colors = logColours(monochrome_logs)
         String.format(
-            '''\n
+            """\n
             ${dashedLine(monochrome_logs)}
                                                     ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
             ${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
@@ -263,8 +264,7 @@ class NfcoreTemplate {
                                                     ${colors.green}`._,._,\'${colors.reset}
             ${colors.purple}  ${workflow.manifest.name} v${workflow.manifest.version}${colors.reset}
             ${dashedLine(monochrome_logs)}
-            '''.stripIndent()
+            """.stripIndent()
         )
     }
-
 }
