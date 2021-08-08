@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Dependencies`
 
 * Updated GRCh38 cellranger GEX reference
+* Created new container for Cell Ranger, updated version to `6.0.2`.
 
 ### `Deprecated`
 

@@ -67,24 +67,15 @@ needs to be done manually.
     ENV CELLRANGER_VER <VERSION>
     ```
 
-4. Create the container:
+4. Create the container and push to Dockerhub (qbicpipelines/cellranger). You will have to log in to be able to push there:
 
     ```bash
-    docker build . -t qbicpipelines/cellranger:dev
-    docker push qbicpipelines/cellranger:dev
+    docker build . -t qbicpipelines/cellranger:<cellranger-ver>
+    docker login
+    docker push qbicpipelines/cellranger:<cellranger-ver>
     ```
 
-5. If preparing for new release: bump to the desired pipeline version (`<version>`) and container tag (same as pipeline version)
-in the `main.nf` manifest, `nextflow.config` container definition, and `ci.yml` GitHub actions workflow.
-Then push the latest and release container tags.
-
-    ```bash
-    docker pull qbicpipelines/cellranger:dev
-    docker tag qbicpipelines/cellranger:dev qbicpipelines/cellranger:latest
-    docker push qbicpipelines/cellranger:latest
-    docker tag qbicpipelines/cellranger:latest qbicpipelines/cellranger:<version>
-    docker push qbicpipelines/cellranger:<version>
-    ```
+5. Update the cellranger version in all cellranger modules.
 
 ## Documentation
 

@@ -11,7 +11,7 @@ process CELLRANGER_COUNT {
         mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:getSoftwareName(task.process), publish_id:'meta.gem') }
 
-    container "qbicpipelines/cellranger:1.0"   // Docker image
+    container "qbicpipelines/cellranger:6.0.2"   // Docker image
 
     input:
     tuple val(meta), path(reads)

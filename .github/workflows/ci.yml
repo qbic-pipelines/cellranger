@@ -28,11 +28,6 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Pull docker image
-        run: |
-          docker pull qbicpipelines/cellranger:dev
-          docker tag qbicpipelines/cellranger:dev qbicpipelines/cellranger:1.0
-
       - name: Install Nextflow
         env:
           CAPSULE_LOG: none
@@ -60,11 +55,6 @@ jobs:
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
-
-      - name: Pull docker image
-        run: |
-          docker pull qbicpipelines/cellranger:dev
-          docker tag qbicpipelines/cellranger:dev qbicpipelines/cellranger:1.0
 
       - name: Install Nextflow
         env:
