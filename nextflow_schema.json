@@ -35,10 +35,10 @@
                 },
                 "cellranger_mode": {
                     "type": "string",
-                    "default": "GEX",
-                    "description": "Option selecting which cellranger workflow to run: choose from GEX (gene expression only), and multi (including GEX, FB , TCR and BCR files if available).",
+                    "default": "gex",
+                    "description": "Option selecting which cellranger workflow to run: choose from gex (gene expression only), and multi (including GEX, FB , TCR and BCR files if available).",
                     "enum": [
-                        "GEX",
+                        "gex",
                         "multi"
                     ],
                     "fa_icon": "fas fa-cog"
