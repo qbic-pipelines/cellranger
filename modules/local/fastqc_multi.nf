@@ -22,16 +22,14 @@ process FASTQC_MULTI {
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path("*.html"), emit: html
-    tuple val(meta), path("*.zip") , emit: zip
+    tuple val(meta), path("*/*.html"), emit: html
+    tuple val(meta), path("*/*.zip") , emit: zip
     path  "*.version.txt"          , emit: version
 
     script:
     def software = getSoftwareName(task.process)
     """
     fastqc $options.args --threads $task.cpus ${reads}/*.{fastq.gz,fq.gz}
-    mv ${reads}/*.html .
-    mv ${reads}/*.zip .
     fastqc --version | sed -e "s/FastQC v//g" > ${software}.version.txt
     """
 }

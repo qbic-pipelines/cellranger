@@ -12,11 +12,11 @@ workflow INPUT_MULTI_CHECK {
 
     main:
     SAMPLESHEET_MULTI_CHECK ( samplesheet )
-    
+
     SAMPLESHEET_MULTI_CHECK.out.samplesheet.splitCsv( header:true )
         .map { get_samplesheet_paths(it) }
         .set { fastqs }
-    
+
     SAMPLESHEET_MULTI_CHECK.out.featuretype.splitCsv( header:true )
                                             .map { get_featuretypes(it) }
                                             .set { feature }
@@ -34,7 +34,6 @@ def get_samplesheet_paths(LinkedHashMap col) {
     meta.fastq_id       = col.fastq_id
     meta.fastqs         = col.fastqs
     meta.feature_types  = col.feature_types
-    meta.subsample_rate = col.subsample_rate
 
     def array = []
     if (!file(col.fastqs).exists()) {

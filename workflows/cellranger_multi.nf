@@ -27,7 +27,10 @@ if ( params.prebuilt_gex_reference ){
     if (!params.prebuilt_gex_reference || !params.prebuilt_vdj_reference) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a prebuilt gex and vdj reference folder."
     ch_reference_name = Channel.value("${params.gex_reference_name}")
 }
-
+multi_features = params.multi_features ? params.multi_features.split(',').collect{it.trim().toLowerCase().replaceAll('-', '').replaceAll('_', '')} : []
+if ('fb' in multi_features) {
+    if ( params.reference_feature_barcodes ) { ch_fb_reference = Channel.fromPath(params.reference_feature_barcodes, checkIfExists: true) } else { exit 1 "Please provide the feature barcode csv reference or remove 'fb' from the `--multi_features` parameter." }
+}
 /*
 ========================================================================================
     CONFIG FILES
@@ -52,7 +55,6 @@ def modules = params.modules.clone()
 include { GET_SOFTWARE_VERSIONS } from '../modules/local/get_software_versions' addParams( options: [publish_files : ['tsv':'']] )
 include { CELLRANGER_GETREFERENCES } from '../modules/local/cellranger_getreferences' addParams ( options: modules['cellranger_getreferences'] )
 include { CELLRANGER_GETVDJREFERENCE } from '../modules/local/cellranger_getvdjreference' addParams( options: modules['cellranger_getvdjreference'] )
-include { CELLRANGER_MKREF as CELLRANGER_MKREF_MULTI } from '../modules/local/cellranger_mkref' addParams( options: [:] )
 include { FASTQC_MULTI  } from '../modules/local/fastqc_multi'  addParams( options: modules['fastqc_multi'] )
 
 //
@@ -96,9 +98,6 @@ workflow CELLRANGER_MULTI {
         .dump(tag: 'input multi fastqs')
         .set{ ch_fastqs }
 
-    INPUT_MULTI_CHECK.out.feature
-        .dump(tag: 'input multi feature')
-
     //
     // MODULE: Run FastQC
     //
@@ -118,8 +117,10 @@ workflow CELLRANGER_MULTI {
         ch_reference = CELLRANGER_GETREFERENCES.out.reference
         ch_reference_version = Channel.empty()
 
-        CELLRANGER_GETVDJREFERENCE()
-        ch_vdj_reference = CELLRANGER_GETVDJREFERENCE.out.reference
+        if ( 'vdjb' in multi_features || 'vdjt' in multi_features ) {
+            CELLRANGER_GETVDJREFERENCE()
+            ch_vdj_reference = CELLRANGER_GETVDJREFERENCE.out.reference
+        }
 
     } else if (!params.prebuilt_gex_reference && !params.genome) {
         exit 1, "Mkref for VDJ is not yet supported, please provide pre-built references or select `--genome GRCh38/GRCm38`."
@@ -129,9 +130,9 @@ workflow CELLRANGER_MULTI {
 
     ch_software_versions = ch_software_versions.mix(ch_reference_version.ifEmpty(null))
 
-    ch_cellranger_count = ch_fastqs.dump(tag: 'before merge')
-                                    .map{ it -> [ it[0].gem, it[0].sample, it[1] ] }
-                                    .groupTuple()
+    ch_cellranger_multi = ch_fastqs.dump(tag: 'before merge')
+                                    .map{ it -> [ it[0].gem, it[0].fastq_id, it[0].fastqs, it[0].feature_types, it[1] ] }
+                                    .groupTuple(by: [0])
                                     .dump(tag: 'gem merge')
                                     .map{ get_meta_tabs(it) }
                                     .dump(tag: 'rearr merge')
