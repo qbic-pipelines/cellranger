@@ -114,7 +114,6 @@ workflow CELLRANGER_GEX {
         CELLRANGER_GETREFERENCES()
         ch_reference = CELLRANGER_GETREFERENCES.out.reference
         ch_reference_version = Channel.empty()
-        ch_reference_name = CELLRANGER_GETREFERENCES.out.reference_name
     } else if (!params.prebuilt_reference & !params.genome) {
         CELLRANGER_MKREF(
             ch_fasta,
@@ -123,7 +122,8 @@ workflow CELLRANGER_GEX {
         )
         ch_reference = CELLRANGER_MKREF.out.reference
         ch_reference_version = CELLRANGER_MKREF.out.version.first().ifEmpty(null)
-        ch_reference_name = CELLRANGER_MKREF.out.reference_name
+    } else {
+        ch_reference_version = Channel.empty()
     }
 
     ch_software_versions = ch_software_versions.mix(ch_reference_version.ifEmpty(null))
@@ -135,7 +135,6 @@ workflow CELLRANGER_GEX {
                                     .map{ get_meta_tabs(it) }
                                     .dump(tag: 'rearr merge')
 
-    ch_reference_name.dump(tag: 'reference name')
 
     //
     // MODULE: Cellranger count
