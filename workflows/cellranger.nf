@@ -51,7 +51,7 @@ def modules = params.modules.clone()
 // MODULE: Local to the pipeline
 //
 include { GET_SOFTWARE_VERSIONS } from '../modules/local/get_software_versions' addParams( options: [publish_files : ['tsv':'']] )
-include { CELLRANGER_GETREFERENCES } from '../modules/local/cellranger_getreferences' addParams( options: [:] )
+include { CELLRANGER_GETREFERENCES } from '../modules/local/cellranger_getreferences' addParams( options: modules['cellranger_getreferences'] )
 include { CELLRANGER_MKREF } from '../modules/local/cellranger_mkref' addParams( options: [:] )
 include { CELLRANGER_COUNT } from '../modules/local/cellranger_count' addParams( options: [:] )
 
