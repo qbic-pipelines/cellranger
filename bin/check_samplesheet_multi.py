@@ -40,10 +40,10 @@ def check_samplesheet(file_in, file_out):
     This function checks that the samplesheet follows the following structure:
 
     gem,fastq_id,fastqs,feature_types
-    gem1,sc5p_v2_hs_PBMC_10k_5gex,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5gex_fastqs,gene expression
-    gem1,sc5p_v2_hs_PBMC_10k_5fb,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5fb_fastqs,antibody capture
-    gem1,sc5p_v2_hs_PBMC_10k_b,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_b_fastqs,vdj-b
-    gem1,sc5p_v2_hs_PBMC_10k_t,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_t_fastqs,vdj-t
+    gem1,sc5p_v2_hs_PBMC_10k_5gex,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5gex_fastqs,gex
+    gem1,sc5p_v2_hs_PBMC_10k_5fb,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5fb_fastqs,fb
+    gem1,sc5p_v2_hs_PBMC_10k_b,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_b_fastqs,vdj_b
+    gem1,sc5p_v2_hs_PBMC_10k_t,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_t_fastqs,vdj_t
     """
 
     featuretype_list = list()
@@ -88,8 +88,8 @@ def check_samplesheet(file_in, file_out):
                 print_error("fastqs entry has not been specified!", "Line", line)
             if not feature_types:
                 print_error("feature_types entry has not been specified!", "Line", line)
-            if feature_types not in ["gex", "fb", "vdj-b", "vdj-t"]:
-                print_error("invalid feature type, should be gex, fb, vdj-b or vdj-t", "Line", line)
+            if feature_types not in ["gex", "fb", "vdj_b", "vdj_t"]:
+                print_error("invalid feature type, should be gex, fb, vdj_b or vdj_t", "Line", line)
 
             ## Create list of feature types
             featuretype_list.append(feature_types)
@@ -105,14 +105,14 @@ def check_samplesheet(file_in, file_out):
                     print_error("Samplesheet contains duplicate fastq_id entries!", "Line", line)
 
         # Checking featuretype list
-        ftypes = ["gex", "fb", "vdj-b", "vdj-t"]
+        ftypes = ["gex", "fb", "vdj_b", "vdj_t"]
         featuretype_list = set(featuretype_list)
         exist = list()
         for ft in ftypes:
             if ft in featuretype_list:
-                exist.append("1")
+                exist.append("true")
             else:
-                exist.append("0")
+                exist.append("false")
 
         with open(file_out, "w") as fout:
             fout.write(",".join(ftypes)+"\n")
