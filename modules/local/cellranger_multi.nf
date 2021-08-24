@@ -49,9 +49,17 @@ process CELLRANGER_MULTI {
 
     stub:
     """
-    generate_multi_config.py -s $meta.samples -f $meta.feature_types -o 'cellranger_multi_config.csv'
-    mkdir -p "sample-${meta.gem}/outs/"
-    touch sample-${meta.gem}/outs/fake_file.txt
+    generate_multi_config.py \
+    -s='$meta.samples' \
+    -ft='$meta.feature_types' \
+    -sd='$meta.sample_paths' \
+    -gexr='$reference_name' \
+    -vdjr='$vdj_reference_name' \
+    -fbr='$fb_reference_name' \
+    -o='cellranger_multi_config.csv'
+
+    mkdir -p "${meta.gem}/outs/"
+    touch "${meta.gem}/outs/fake_file.txt"
     cellranger --version | grep -o "[0-9\\. ]\\+" > cellranger.version.txt
     """
 }
