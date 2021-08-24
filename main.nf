@@ -39,8 +39,8 @@ workflow {
         include { CELLRANGER_GEX } from './workflows/cellranger'
         CELLRANGER_GEX ()
     } else if (params.cellranger_mode == 'multi') {
-        include { CELLRANGER_MULTI } from './workflows/cellranger_multi'
-        CELLRANGER_MULTI()
+        include { CELLRANGER_MULTI_WF } from './workflows/cellranger_multi'
+        CELLRANGER_MULTI_WF()
     }
 }
 

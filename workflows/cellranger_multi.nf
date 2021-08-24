@@ -20,7 +20,7 @@ if (params.input)  { ch_input = Channel.fromPath(params.input, checkIfExists: tr
 if (params.enable_conda) { exit 1, "This pipeline does not support conda, as Cell Ranger cannot be installed via conda!" }
 // Handle reference channels
 if ( params.prebuilt_gex_reference ){
-    if (params.genome) { exit 1, "Please provide either a prebuilt reference folder or a genome name, not both." }
+    if (params.genome) { exit 1, "Please provide either a prebuilt reference folder or a genome name (e.g. --genome GRCh38), not both." }
     if (params.prebuilt_gex_reference) { ch_reference = Channel.fromPath(params.prebuilt_gex_reference, checkIfExists: true) } else { exit 1, "Please provide also the prebuilt gex reference (--prebuilt_gex_reference)" }
     if (params.prebuilt_vdj_reference) { ch_vdj_reference = Channel.fromPath(params.prebuilt_vdj_reference, checkIfExists: true) } else { exit 1, "Please provide also the prebuilt vdj reference (--prebuilt_vdj_reference)" }
 } else if (!params.genome) {
@@ -56,6 +56,7 @@ include { GET_SOFTWARE_VERSIONS } from '../modules/local/get_software_versions' 
 include { CELLRANGER_GETREFERENCES } from '../modules/local/cellranger_getreferences' addParams ( options: modules['cellranger_getreferences'] )
 include { CELLRANGER_GETVDJREFERENCE } from '../modules/local/cellranger_getvdjreference' addParams( options: modules['cellranger_getvdjreference'] )
 include { FASTQC_MULTI  } from '../modules/local/fastqc_multi'  addParams( options: modules['fastqc_multi'] )
+include { CELLRANGER_MULTI } from '../modules/local/cellranger_multi'  addParams( options: [:] )
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -85,7 +86,7 @@ include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( op
 // Info required for completion email and summary
 def multiqc_report = []
 
-workflow CELLRANGER_MULTI {
+workflow CELLRANGER_MULTI_WF {
 
     ch_software_versions = Channel.empty()
 
@@ -139,13 +140,15 @@ workflow CELLRANGER_MULTI {
 
 
     //
-    // MODULE: Cellranger count
+    // MODULE: Cellranger multi
     //
-    // CELLRANGER_COUNT(
-    //     ch_cellranger_count,
-    //     ch_reference
-    // )
-    // ch_software_versions = ch_software_versions.mix(CELLRANGER_COUNT.out.version.ifEmpty(null))
+    CELLRANGER_MULTI(
+        ch_cellranger_multi,
+        ch_reference,
+        ch_vdj_reference,
+        ch_fb_reference
+    )
+    ch_software_versions = ch_software_versions.mix(CELLRANGER_MULTI.out.version.ifEmpty(null))
 
     ch_vdj_reference.dump(tag:'vdj reference')
     ch_reference.dump(tag: 'gex reference')
@@ -210,8 +213,10 @@ def get_meta_tabs(arr) {
     def meta = [:]
     meta.gem          = arr[0]
     meta.samples      = arr[1]
+    meta.sample_paths = arr[2]
+    meta.feature_types = arr[3]
 
     def array = []
-    array = [ meta, arr[2].flatten() ]
+    array = [ meta, arr[4].flatten() ]
     return array
 }
