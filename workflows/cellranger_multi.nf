@@ -144,9 +144,9 @@ workflow CELLRANGER_MULTI_WF {
     //
     CELLRANGER_MULTI(
         ch_cellranger_multi,
-        ch_reference,
-        ch_vdj_reference,
-        ch_fb_reference
+        ch_reference.collect(),
+        ch_vdj_reference.collect(),
+        ch_fb_reference.collect()
     )
     ch_software_versions = ch_software_versions.mix(CELLRANGER_MULTI.out.version.ifEmpty(null))
 
