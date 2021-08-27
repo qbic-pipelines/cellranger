@@ -3,7 +3,7 @@ include { initOptions; saveFiles; getSoftwareName } from './functions'
 params.options = [:]
 def options    = initOptions(params.options)
 
-process CELLRANGER_GETREFERENCES {
+process CELLRANGER_GETVDJREFERENCE {
     tag 'get_references'
     label 'process_low'
 
@@ -24,14 +24,14 @@ process CELLRANGER_GETREFERENCES {
     script:
     if (params.genome == 'GRCh38') {
         """
-        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
-        tar -xvzf refdata-gex-GRCh38-2020-A.tar.gz
+        wget https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-5.0.0.tar.gz
+        tar -xvzf refdata-cellranger-vdj-GRCh38-alts-ensembl-5.0.0.tar.gz
         rm *.tar.gz
         """
     } else if ( params.genome == 'mm10' ) {
         """
-        wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
-        tar -xvzf refdata-gex-mm10-2020-A.tar.gz
+        wget https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0.tar.gz
+        tar -xvzf refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0.tar.gz
         rm *.tar.gz
         """
     }

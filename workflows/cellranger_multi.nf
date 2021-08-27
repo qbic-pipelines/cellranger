@@ -16,19 +16,20 @@ def checkPathParamList = [ params.input ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Create a channel for input read files
-if (params.input)  { ch_input = file(params.input, checkIfExists: true) } else { exit 1, "Please provide input file with sample metadata with the '--input' option." }
+if (params.input)  { ch_input = Channel.fromPath(params.input, checkIfExists: true) } else { exit 1, "Please provide input file with sample metadata with the '--input' option." }
 if (params.enable_conda) { exit 1, "This pipeline does not support conda, as Cell Ranger cannot be installed via conda!" }
 // Handle reference channels
-if (params.prebuilt_gex_reference){
-    if (params.genome) exit 1, "Please provide either a reference folder or a genome name, not both."
-    ch_reference = Channel.fromPath("${params.prebuilt_gex_reference}")
+if ( params.prebuilt_gex_reference ){
+    if (params.genome) { exit 1, "Please provide either a prebuilt reference folder or a genome name (e.g. --genome GRCh38), not both." }
+    if (params.prebuilt_gex_reference) { ch_reference = Channel.fromPath(params.prebuilt_gex_reference, checkIfExists: true) } else { exit 1, "Please provide also the prebuilt gex reference (--prebuilt_gex_reference)" }
+    if (params.prebuilt_vdj_reference) { ch_vdj_reference = Channel.fromPath(params.prebuilt_vdj_reference, checkIfExists: true) } else { exit 1, "Please provide also the prebuilt vdj reference (--prebuilt_vdj_reference)" }
 } else if (!params.genome) {
-    if (!params.fasta || !params.gtf) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a reference folder, or a fasta and gtf file."
-    if (params.fasta)  { ch_fasta = file(params.fasta, checkIfExists: true) } else { exit 1, "Please provide fasta file with the '--fasta' option." }
-    if (params.gtf)  { ch_gtf = file(params.gtf, checkIfExists: true) } else { exit 1, "Please provide gtf file with the '--gtf' option." }
-    ch_reference_name = Channel.value("${params.gex_reference_name}")
+    if (!params.prebuilt_gex_reference || !params.prebuilt_vdj_reference) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a prebuilt gex and vdj reference folder."
 }
-
+multi_features = params.multi_features ? params.multi_features.split(',').collect{it.trim().toLowerCase().replaceAll('-', '').replaceAll('_', '')} : []
+if ('fb' in multi_features) {
+    if ( params.reference_feature_barcodes ) { ch_fb_reference = Channel.fromPath(params.reference_feature_barcodes, checkIfExists: true) } else { exit 1 "Please provide the feature barcode csv reference or remove 'fb' from the `--multi_features` parameter." }
+}
 /*
 ========================================================================================
     CONFIG FILES
@@ -51,14 +52,15 @@ def modules = params.modules.clone()
 // MODULE: Local to the pipeline
 //
 include { GET_SOFTWARE_VERSIONS } from '../modules/local/get_software_versions' addParams( options: [publish_files : ['tsv':'']] )
-include { CELLRANGER_GETREFERENCES } from '../modules/local/cellranger_getreferences' addParams( options: modules['cellranger_getreferences'] )
-include { CELLRANGER_MKREF } from '../modules/local/cellranger_mkref' addParams( options: [:] )
-include { CELLRANGER_COUNT } from '../modules/local/cellranger_count' addParams( options: [:] )
+include { CELLRANGER_GETREFERENCES } from '../modules/local/cellranger_getreferences' addParams ( options: modules['cellranger_getreferences'] )
+include { CELLRANGER_GETVDJREFERENCE } from '../modules/local/cellranger_getvdjreference' addParams( options: modules['cellranger_getvdjreference'] )
+include { FASTQC_MULTI  } from '../modules/local/fastqc_multi'  addParams( options: modules['fastqc_multi'] )
+include { CELLRANGER_MULTI } from '../modules/local/cellranger_multi'  addParams( options: [:] )
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check' addParams( options: [:] )
+include { INPUT_MULTI_CHECK } from '../subworkflows/local/input_multi_check' addParams( options: [:] )
 
 /*
 ========================================================================================
@@ -72,7 +74,6 @@ multiqc_options.args += params.multiqc_title ? Utils.joinModuleArgs(["--title \"
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { FASTQC  } from '../modules/nf-core/modules/fastqc/main'  addParams( options: modules['fastqc'] )
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( options: multiqc_options   )
 
 /*
@@ -84,67 +85,72 @@ include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( op
 // Info required for completion email and summary
 def multiqc_report = []
 
-workflow CELLRANGER_GEX {
+workflow CELLRANGER_MULTI_WF {
 
     ch_software_versions = Channel.empty()
 
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     //
-    INPUT_CHECK ( ch_input )
-        .groupTuple(by: [0])
-        .map{ it -> [ it[0], it[1].flatten() ] }
-        .dump()
-        .set{ ch_reads }
+    INPUT_MULTI_CHECK ( ch_input )
+
+    INPUT_MULTI_CHECK.out.fastqs
+        .dump(tag: 'input multi fastqs')
+        .set{ ch_fastqs }
 
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_reads
+    FASTQC_MULTI (
+        ch_fastqs
     )
-    ch_software_versions = ch_software_versions.mix(FASTQC.out.version.first().ifEmpty(null))
+    ch_software_versions = ch_software_versions.mix(FASTQC_MULTI.out.version.first().ifEmpty(null))
 
 
     //
     // MODULE: Get references
     //
 
-    if (!params.prebuilt_gex_reference && !params.fasta && !params.gtf) {
+    if (!params.prebuilt_gex_reference || !params.prebuilt_vdj_reference ) {
+
         CELLRANGER_GETREFERENCES()
         ch_reference = CELLRANGER_GETREFERENCES.out.reference
         ch_reference_version = Channel.empty()
+
+        if ( 'vdjb' in multi_features || 'vdjt' in multi_features ) {
+            CELLRANGER_GETVDJREFERENCE()
+            ch_vdj_reference = CELLRANGER_GETVDJREFERENCE.out.reference
+        }
+
     } else if (!params.prebuilt_gex_reference && !params.genome) {
-        CELLRANGER_MKREF(
-            ch_fasta,
-            ch_gtf,
-            ch_reference_name
-        )
-        ch_reference = CELLRANGER_MKREF.out.reference
-        ch_reference_version = CELLRANGER_MKREF.out.version.first().ifEmpty(null)
+        exit 1, "Mkref for VDJ is not yet supported, please provide pre-built references or select `--genome GRCh38/GRCm38`."
     } else {
         ch_reference_version = Channel.empty()
     }
 
     ch_software_versions = ch_software_versions.mix(ch_reference_version.ifEmpty(null))
 
-    ch_cellranger_count = ch_reads.dump(tag: 'before merge')
-                                    .map{ it -> [ it[0].gem, it[0].sample, it[1] ] }
-                                    .groupTuple()
+    ch_cellranger_multi = ch_fastqs.dump(tag: 'before merge')
+                                    .map{ it -> [ it[0].gem, it[0].fastq_id, it[0].fastqs, it[0].feature_types, it[1] ] }
+                                    .groupTuple(by: [0])
                                     .dump(tag: 'gem merge')
                                     .map{ get_meta_tabs(it) }
                                     .dump(tag: 'rearr merge')
 
 
     //
-    // MODULE: Cellranger count
+    // MODULE: Cellranger multi
     //
-    CELLRANGER_COUNT(
-        ch_cellranger_count,
-        ch_reference
+    CELLRANGER_MULTI(
+        ch_cellranger_multi,
+        ch_reference.collect(),
+        ch_vdj_reference.collect(),
+        ch_fb_reference.collect()
     )
-    ch_software_versions = ch_software_versions.mix(CELLRANGER_COUNT.out.version.ifEmpty(null))
+    ch_software_versions = ch_software_versions.mix(CELLRANGER_MULTI.out.version.ifEmpty(null))
 
+    ch_vdj_reference.dump(tag:'vdj reference')
+    ch_reference.dump(tag: 'gex reference')
     //
     // MODULE: Pipeline reporting
     //
@@ -171,7 +177,7 @@ workflow CELLRANGER_GEX {
     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(GET_SOFTWARE_VERSIONS.out.yaml.collect())
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC_MULTI.out.zip.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (
         ch_multiqc_files.collect()
@@ -206,8 +212,10 @@ def get_meta_tabs(arr) {
     def meta = [:]
     meta.gem          = arr[0]
     meta.samples      = arr[1]
+    meta.sample_paths = arr[2]
+    meta.feature_types = arr[3]
 
     def array = []
-    array = [ meta, arr[2].flatten() ]
+    array = [ meta, arr[4].flatten() ]
     return array
 }

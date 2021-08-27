@@ -35,10 +35,10 @@
                 },
                 "cellranger_mode": {
                     "type": "string",
-                    "default": "GEX",
-                    "description": "Option selecting which cellranger workflow to run: choose from GEX (gene expression only), and multi (including GEX, FB , TCR and BCR files if available).",
+                    "default": "gex",
+                    "description": "Option selecting which cellranger workflow to run: choose from gex (gene expression only), and multi (including GEX, FB , TCR and BCR files if available).",
                     "enum": [
-                        "GEX",
+                        "gex",
                         "multi"
                     ],
                     "fa_icon": "fas fa-cog"
@@ -81,11 +81,6 @@
                     "default": true,
                     "description": "Save the reference data to the ouput directory."
                 },
-                "reference_name": {
-                    "type": "string",
-                    "description": "Name of the custom reference",
-                    "default": "\"custom_reference\""
-                },
                 "fasta": {
                     "type": "string",
                     "description": "Path to genome fasta file, to build a custom reference."
@@ -94,9 +89,17 @@
                     "type": "string",
                     "description": "Path to gene annotation gtf file, to build a custom reference."
                 },
-                "prebuilt_reference": {
+                "prebuilt_gex_reference": {
                     "type": "string",
-                    "description": "Path to folder with pre-built references."
+                    "description": "Path to folder with pre-built GEX reference (must be 10x cell ranger compatible)."
+                },
+                "prebuilt_vdj_reference": {
+                    "type": "string",
+                    "description": "Path to folder with pre-built VDJ reference (must be 10x cell ranger compatible, and compatible with the GEX reference)."
+                },
+                "reference_feature_barcodes": {
+                    "type": "string",
+                    "description": "Path to feature barcodes csv reference (see https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref)."
                 }
             }
         },
@@ -308,5 +311,11 @@
         {
             "$ref": "#/definitions/institutional_config_options"
         }
-    ]
+    ],
+    "properties": {
+        "multi_features": {
+            "type": "string",
+            "default": "gex,fb,vdj-b,vdj-t"
+        }
+    }
 }
