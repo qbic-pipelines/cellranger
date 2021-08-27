@@ -20,19 +20,15 @@ process CELLRANGER_GETVDJREFERENCE {
 
     output:
     path("refdata-*"), emit: reference
-    val reference_name, emit: reference_name
-
 
     script:
     if (params.genome == 'GRCh38') {
-        reference_name = 'refdata-cellranger-vdj-GRCh38-alts-ensembl-5.0.0'
         """
         wget https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-5.0.0.tar.gz
         tar -xvzf refdata-cellranger-vdj-GRCh38-alts-ensembl-5.0.0.tar.gz
         rm *.tar.gz
         """
     } else if ( params.genome == 'mm10' ) {
-        reference_name = 'refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0'
         """
         wget https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0.tar.gz
         tar -xvzf refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0.tar.gz

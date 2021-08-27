@@ -20,19 +20,15 @@ process CELLRANGER_GETREFERENCES {
 
     output:
     path("refdata-*"), emit: reference
-    val reference_name, emit: reference_name
-
 
     script:
     if (params.genome == 'GRCh38') {
-        reference_name = 'refdata-gex-GRCh38-2020-A'
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
         tar -xvzf refdata-gex-GRCh38-2020-A.tar.gz
         rm *.tar.gz
         """
     } else if ( params.genome == 'mm10' ) {
-        reference_name = 'refdata-gex-mm10-2020-A'
         """
         wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-mm10-2020-A.tar.gz
         tar -xvzf refdata-gex-mm10-2020-A.tar.gz

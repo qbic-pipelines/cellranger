@@ -25,7 +25,6 @@ if ( params.prebuilt_gex_reference ){
     if (params.prebuilt_vdj_reference) { ch_vdj_reference = Channel.fromPath(params.prebuilt_vdj_reference, checkIfExists: true) } else { exit 1, "Please provide also the prebuilt vdj reference (--prebuilt_vdj_reference)" }
 } else if (!params.genome) {
     if (!params.prebuilt_gex_reference || !params.prebuilt_vdj_reference) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a prebuilt gex and vdj reference folder."
-    ch_reference_name = Channel.value("${params.gex_reference_name}")
 }
 multi_features = params.multi_features ? params.multi_features.split(',').collect{it.trim().toLowerCase().replaceAll('-', '').replaceAll('_', '')} : []
 if ('fb' in multi_features) {
