@@ -113,7 +113,6 @@ If your experiment includes TCR and/or BCR vdj sequencing, the path to the VDJ r
 --prebuilt_vdj_reference ./vdj_reference
 ```
 
-
 ## Core Nextflow arguments
 
 > **NB:** These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
