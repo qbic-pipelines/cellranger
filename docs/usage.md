@@ -39,17 +39,23 @@ First, go to the [qbic-pipelines/cellranger releases page](https://github.com/qb
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
-### Input sample sheet
+### Running cell ranger with gene expression data
 
-A sample sheet containing sample metadata and paths to the input fastq files is needed to run the pipeline and should be provided with the `--input` parameter.
+For the analysis of only scRNA-seq gene expression data, the `cellranger count` option will be used.
 
-Example sample sheet:
+```bash
+nextflow run qbic-pipelines/cellranger --input 'samplesheet.tsv' --genome 'GRCh38' -profile docker
+```
+
+In this case the sample sheet containing sample metadata and paths to the input fastq files is needed to run the pipeline and should be provided with the `--input` parameter.
+
+Example sample sheet for cellranger count:
 
 ```tsv
-GEM Sample  Lane  R1  R2  I1
-GEM1  pbmc1_1k_v3_mini  L001  pbmc1_1k_v3_mini_S1_L001_R1_001.fastq.gz  pbmc1_1k_v3_mini_S1_L001_R2_001.fastq.gz  pbmc1_1k_v3_mini_S1_L001_I1_001.fastq.gz
-GEM1  pbmc1_1k_v3_mini  L002  pbmc1_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc1_1k_v3_mini_S1_L002_R2_001.fastq.gz  pbmc1_1k_v3_mini_S1_L002_I1_001.fastq.gz
-GEM2  pbmc2_1k_v3_mini  L001  pbmc2_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc2_1k_v3_mini_S1_L002_R2_001.fastq.gz  pbmc2_1k_v3_mini_S1_L002_I1_001.fastq.gz
+GEM Sample  Lane  R1  R2
+GEM1  pbmc1_1k_v3_mini  L001  pbmc1_1k_v3_mini_S1_L001_R1_001.fastq.gz  pbmc1_1k_v3_mini_S1_L001_R2_001.fastq.gz
+GEM1  pbmc1_1k_v3_mini  L002  pbmc1_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc1_1k_v3_mini_S1_L002_R2_001.fastq.gz
+GEM2  pbmc2_1k_v3_mini  L001  pbmc2_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc2_1k_v3_mini_S1_L002_R2_001.fastq.gz
 ```
 
 * GEM: GEM ID. If samples were pooled in the same GEM, but sequenced in different lanes, then they will be processed together with `cellranger count`. See this [info](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger) to know more about this.
@@ -57,11 +63,24 @@ GEM2  pbmc2_1k_v3_mini  L001  pbmc2_1k_v3_mini_S1_L002_R1_001.fastq.gz  pbmc2_1k
 * Lane: Lane ID. If Fastq files have the same sample ID and different lane IDs, they will be merged automatically by `cellranger count`.
 * R1: First mate (R1) of fastq files.
 * R2: Second mate (R2) of fastq files.
-* I1: Index file (optional). If index file is provided, please set the flag `--index_file true`.
+
+#### Running cell ranger with data from different modalities
+
+For the combination of scRNAseq data with data from other modalities (e.g. feature barcodes, or 5' GEX combined with TCR and/or BCR V(D)J targeted sequencing), the `cellranger multi` option will be used.
+
+If using antibody feature barcodes, the reference file for the feature barcodes should be provided with `--reference_feature_barcodes`. For more information on how to create this reference file check the 10x [documentation](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref).
+
+```bash
+nextflow run qbic-pipelines/cellranger --input 'samplesheet.tsv' \
+--cellranger_mode 'multi' \
+--genome 'GRCh38' \
+--reference_feature_barcodes 'TotalSeqA_reference_file.csv' \
+-profile docker
+```
 
 ### Genome reference data
 
-Genome reference data can be provided in several ways.
+Genome reference data can be provided in several ways: using the 10x genomics pre-built references with the `--genome` parameter (only GRCh38 and mm10 are supported), providing a `fasta` and `gtf` file, and providing the path to pre-built references. In the next sections, these options are explained.
 
 #### Using 10x genomics pre-built references
 
@@ -85,7 +104,13 @@ To build custom references as part of the pipeline, you can provide a fasta and 
 If you have already a pre-built reference folder, it can also be directly provided:
 
 ```bash
---prebuilt_reference reference
+--prebuilt_gex_reference ./reference
+```
+
+If your experiment includes TCR and/or BCR vdj sequencing, the path to the VDJ references should also be provided:
+
+```bash
+--prebuilt_vdj_reference ./vdj_reference
 ```
 
 ## Core Nextflow arguments
