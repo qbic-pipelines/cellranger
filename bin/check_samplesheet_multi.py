@@ -39,11 +39,11 @@ def check_samplesheet(file_in, file_out):
     """
     This function checks that the samplesheet follows the following structure:
 
-    gem,fastq_id,fastqs,feature_types
-    gem1,sc5p_v2_hs_PBMC_10k_5gex,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5gex_fastqs,gex
-    gem1,sc5p_v2_hs_PBMC_10k_5fb,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5fb_fastqs,fb
-    gem1,sc5p_v2_hs_PBMC_10k_b,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_b_fastqs,vdj_b
-    gem1,sc5p_v2_hs_PBMC_10k_t,/sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_t_fastqs,vdj_t
+    gem fastq_id    fastqs  feature_types
+    gem1    sc5p_v2_hs_PBMC_10k_5gex    /sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5gex_fastqs   gex
+    gem1    sc5p_v2_hs_PBMC_10k_5fb /sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_5gex_5fb_fastqs/sc5p_v2_hs_PBMC_10k_5fb_fastqs    fb
+    gem1    sc5p_v2_hs_PBMC_10k_b   /sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_b_fastqs  vdj_b
+    gem1    sc5p_v2_hs_PBMC_10k_t   /sfs/7/workspace/ws/qeaga01-GEX_TCR_BCR_FB-0/data/sc5p_v2_hs_PBMC_10k_t_fastqs  vdj_t
     """
 
     featuretype_list = list()
@@ -54,14 +54,14 @@ def check_samplesheet(file_in, file_out):
         MIN_COLS = 4
         # TODO nf-core: Update the column names for the input samplesheet
         HEADER = ["gem", "fastq_id", "fastqs", "feature_types"]
-        header = [x.strip('"') for x in fin.readline().strip().split(",")]
+        header = [x.strip('"') for x in fin.readline().strip().split("\t")]
         if header[: len(HEADER)] != HEADER:
-            print("ERROR: Please check samplesheet header -> {} != {}".format(",".join(header), ",".join(HEADER)))
+            print("ERROR: Please check samplesheet header -> {} != {}".format("\t".join(header), "\t".join(HEADER)))
             sys.exit(1)
 
         ## Check sample entries
         for line in fin:
-            lspl = [x.strip().strip('"') for x in line.strip().split(",")]
+            lspl = [x.strip().strip('"') for x in line.strip().split("\t")]
 
             # Check valid number of columns per row
             if len(lspl) < len(HEADER):
@@ -115,8 +115,8 @@ def check_samplesheet(file_in, file_out):
                 exist.append("false")
 
         with open(file_out, "w") as fout:
-            fout.write(",".join(ftypes)+"\n")
-            fout.write(",".join(exist)+"\n")
+            fout.write("\t".join(ftypes)+"\n")
+            fout.write("\t".join(exist)+"\n")
 
 
 def main(args=None):
