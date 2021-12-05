@@ -15,9 +15,12 @@ parser.add_argument("-o", "--output_name", type=str, help="Name of output config
 args = parser.parse_args()
 
 # Read and transform arguments to list
+print(args.samples)
 samples = args.samples.strip('[').strip(']').replace(" ","")
+print(samples)
 samples_list = samples.split(',')
 print(samples_list)
+samples_list = [ x.replace("|",",") for x in samples_list]
 feature_types = args.feature_types.strip('[').strip(']').replace(" ","")
 feature_type_list = feature_types.split(',')
 print(feature_type_list)
@@ -51,7 +54,10 @@ with open(outname, 'w') as f:
     f.write("[libraries]\n")
     f.write("fastq_id,fastqs,feature_types\n")
     for (sample,dir,ft) in zip(samples_list,sample_dirs_list,feature_type_list):
-        f.write("{0},{1},{2}\n".format(sample,dir,dict_ft[ft]))
+        if "," in sample:
+            f.write("\"{0}\",{1},{2}\n".format(sample,dir,dict_ft[ft]))
+        else:
+            f.write("{0},{1},{2}\n".format(sample,dir,dict_ft[ft]))
 
 
 

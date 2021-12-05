@@ -13,7 +13,7 @@ workflow INPUT_MULTI_CHECK {
     main:
     SAMPLESHEET_MULTI_CHECK ( samplesheet )
 
-    SAMPLESHEET_MULTI_CHECK.out.samplesheet.splitCsv( header:true )
+    SAMPLESHEET_MULTI_CHECK.out.samplesheet.splitCsv( header:true, sep: '\t' )
         .map { get_samplesheet_paths(it) }
         .set { fastqs }
 
