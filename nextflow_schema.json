@@ -42,6 +42,11 @@
                         "multi"
                     ],
                     "fa_icon": "fas fa-cog"
+                },
+                "multi_features": {
+                    "type": "string",
+                    "default": "gex,fb,vdj-b,vdj-t",
+                    "description": "Select features for multi mode"
                 }
             }
         },
@@ -100,6 +105,10 @@
                 "reference_feature_barcodes": {
                     "type": "string",
                     "description": "Path to feature barcodes csv reference (see https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref)."
+                },
+                "gex_reference_name": {
+                    "type": "string",
+                    "default": null
                 }
             }
         },
@@ -311,11 +320,5 @@
         {
             "$ref": "#/definitions/institutional_config_options"
         }
-    ],
-    "properties": {
-        "multi_features": {
-            "type": "string",
-            "default": "gex,fb,vdj-b,vdj-t"
-        }
-    }
+    ]
 }
