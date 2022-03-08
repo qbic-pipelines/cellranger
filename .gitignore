@@ -7,4 +7,5 @@ tests/
 testing/
 testing*
 *.pyc
-cellranger*
+cellranger*.tar.gz
+.vscode/
