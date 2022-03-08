@@ -23,7 +23,6 @@ if (params.prebuilt_gex_reference){
     if (params.genome) exit 1, "Please provide either a reference folder or a genome name, not both."
     ch_reference = Channel.fromPath("${params.prebuilt_gex_reference}")
 } else if (!params.genome) {
-    if (!params.fasta || !params.gtf) exit 1, "Please provide either a genome reference name with the `--genome` parameter, or a reference folder, or a fasta and gtf file."
     if (params.fasta)  { ch_fasta = file(params.fasta, checkIfExists: true) } else { exit 1, "Please provide fasta file with the '--fasta' option." }
     if (params.gtf)  { ch_gtf = file(params.gtf, checkIfExists: true) } else { exit 1, "Please provide gtf file with the '--gtf' option." }
     ch_reference_name = Channel.value("${params.gex_reference_name}")
